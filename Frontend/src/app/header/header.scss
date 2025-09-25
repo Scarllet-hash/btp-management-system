@@ -1,0 +1,25 @@
+/* src/app/header/header.component.scss */
+
+$primary-color: #FFFF00;
+$secondary-color: #8BC34A;
+
+.btn-primary {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  color: black;
+  font-weight: bold;
+
+  &:hover {
+    background-color: darken($primary-color, 10%);
+    border-color: darken($primary-color, 10%);
+    color: black;
+  }
+}
+
+.btn-link {
+  text-decoration: none;
+
+  &:hover {
+    color: $secondary-color !important;
+  }
+}

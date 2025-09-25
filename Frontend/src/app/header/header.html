@@ -1,0 +1,59 @@
+
+<header class="bg-white shadow-sm">
+  <div class="container-fluid">
+    <div class="row align-items-center py-3">
+      
+      <!-- Logo -->
+      <div class="col-2">
+        <h2 class="mb-0 fw-bold">BTP STORE</h2>
+      </div>
+
+      <!-- Barre de recherche -->
+      <div class="col-6">
+        <div class="input-group">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Cherchez un produit, une marque ou une catégorie"
+            [(ngModel)]="searchQuery"
+          >
+          <button class="btn btn-primary" (click)="onSearch()">
+            Rechercher
+          </button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="col-4">
+        <div class="d-flex align-items-center justify-content-end gap-4">
+          
+          <!-- Se connecter -->
+          <button class="btn btn-link text-dark p-0" (click)="onLogin()">
+            <i class="bi bi-person me-1"></i>
+            Se connecter
+            <i class="bi bi-chevron-down ms-1"></i>
+          </button>
+
+          <!-- Aide -->
+          <button class="btn btn-link text-dark p-0" (click)="onHelp()">
+            Aide
+            <i class="bi bi-chevron-down ms-1"></i>
+          </button>
+
+          <!-- Panier -->
+          <button class="btn btn-link text-dark p-0" (click)="onCartClick()">
+            <i class="bi bi-cart"></i>
+            Panier
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Modal d'authentification -->
+<app-auth-modal 
+  *ngIf="showAuthModal" 
+  (closeModal)="onCloseAuthModal()"
+></app-auth-modal>
