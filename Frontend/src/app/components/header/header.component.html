@@ -1,0 +1,135 @@
+<header class="header-section">
+  <!-- Vidéo de fond -->
+  <div class="video-background">
+    <video 
+    #backgroundVideo
+    autoplay 
+    muted 
+    loop 
+    playsinline
+    [volume]="0">
+      <source src="assets/videos/construction-bg.mp4" type="video/mp4">
+      <!-- <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4"> -->
+      <!-- Image de fallback si la vidéo ne charge pas -->
+      <!-- <img src="assets/images/construction-fallback.jpg" alt="Construction BTP" style="width: 100%; height: 100%; object-fit: cover;"> -->
+    </video>
+    <div class="video-overlay"></div>
+  </div>
+
+  <!-- Navigation principale -->
+  <nav class="navbar navbar-expand-lg fixed-top custom-navbar">
+    <div class="container-fluid">
+      <!-- Logo -->
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-hard-hat me-2"></i>
+        <span class="brand-text">BTP-Store</span>
+      </a>
+
+      <!-- Bouton responsive -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menu de navigation -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-center">
+          <!-- Menu items -->
+          <!-- <li class="nav-item me-3">
+            <a class="nav-link" href="#">Accueil</a>
+          </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="#">A Propos</a>
+          </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="#">Services</a>
+          </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="#">Contact</a>
+          </li> -->
+          
+          <!-- Bouton de connexion -->
+          <li class="nav-item me-3">
+            <button class="btn btn-outline-light nav-btn" (click)="onLogin()">
+              <i class="fas fa-user me-2"></i>
+              Se connecter
+            </button>
+          </li>
+          
+          <!-- Panier -->
+          <li class="nav-item">
+            <button class="btn btn-warning nav-btn position-relative" (click)="onCartClick()">
+              <i class="fas fa-shopping-cart me-2"></i>
+              Panier
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                    *ngIf="cartItemCount$ | async as count"
+                    [class.d-none]="count === 0">
+                {{ count }}
+              </span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenu hero centré -->
+  <div class="hero-content">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-10">
+          <!-- Barre de recherche -->
+            <div class="search-container animate__animated animate__fadeInDown">
+            <div class="search-wrapper">
+                <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Rechercher des matériaux, outils, équipements..."
+                (input)="onSearchInput($event)"
+                (keyup.enter)="onSearch()"
+                >
+                <button class="search-button" (click)="onSearch()">
+                <i class="fas fa-search"></i>
+                </button>
+            </div>
+            </div>
+          
+          <!-- Titre principal -->
+          <h1 class="hero-title animate__animated animate__fadeInUp">
+            Votre Partenaire en<br>
+            <span class="highlight-text">matériaux de construction</span>
+          </h1>
+          
+          <!-- Sous-titre -->
+          <p class="hero-subtitle animate__animated animate__fadeInUp animate__delay-1s">
+            Découvrez notre gamme complète de matériaux de qualité professionnelle<br>
+            pour tous vos projets de construction et rénovation
+          </p>
+          
+          <!-- Bouton d'action -->
+          <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-2s">
+            <button class="btn btn-primary btn-lg cta-button" (click)="onVendorClick()">
+              Espace Vendeur
+              <!-- <i class="fas fa-arrow-right ms-2"></i> -->
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicateurs de scroll -->
+  <div class="scroll-indicator animate__animated animate__fadeInUp animate__delay-3s">
+    <div class="scroll-text"></div>
+    <div class="scroll-arrow">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </div>
+</header>
+
+<!-- Modal d'authentification -->
+<div class="modal-overlay" *ngIf="showAuthModal" (click)="onCloseAuthModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="onCloseAuthModal()">×</button>
+    <app-auth-modal (closeModal)="onCloseAuthModal()"></app-auth-modal>
+  </div>
+</div>

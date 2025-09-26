@@ -1,0 +1,41 @@
+<div class="app-container">
+  <!-- Header avec hero section (seulement sur la page d'accueil) -->
+  <app-header *ngIf="isHomePage()"></app-header>
+  
+  <!-- Navigation simple pour les autres pages -->
+  <nav class="simple-nav" *ngIf="!isHomePage()">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <a class="navbar-brand" [routerLink]="['/']">
+            <i class="fas fa-hard-hat me-2"></i>
+            <span class="brand-text">BTP-Store</span>
+          </a>
+        </div>
+        <div class="col-md-6 text-end">
+          <a class="btn btn-outline-primary me-2" [routerLink]="['/auth-modal']">
+            <i class="fas fa-user me-2"></i>
+            Se connecter
+          </a>
+          <a class="btn btn-warning position-relative" [routerLink]="['/cart']">
+            <i class="fas fa-shopping-cart me-2"></i>
+            Panier
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                  *ngIf="cartItemCount$ | async as count"
+                  [class.d-none]="count === 0">
+              {{ count }}
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Section principale avec router -->
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+  
+  <!-- Footer (optionnel) -->
+  <app-footer *ngIf="isHomePage()"></app-footer>
+</div>

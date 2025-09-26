@@ -1,0 +1,173 @@
+<!-- src/app/auth-modal/auth-modal.component.html -->
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="modal-header">
+      <h4 class="modal-title">
+        {{ isLoginMode ? 'Se connecter' : 'S\'inscrire' }}
+      </h4>
+      <button type="button" class="btn-close" (click)="onClose()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      
+      <!-- Info protection -->
+      <div class="info-protection">
+        <i class="bi bi-shield-check text-success me-2"></i>
+        <span>Vos informations sont protégées</span>
+      </div>
+
+      <!-- FORMULAIRE DE CONNEXION -->
+      <div *ngIf="isLoginMode">
+        <!-- Email -->
+        <div class="form-group">
+          <label for="loginEmail" class="form-label">Email</label>
+          <input 
+            type="email" 
+            id="loginEmail"
+            class="form-control" 
+            [(ngModel)]="email"
+            placeholder="Entrez votre email"
+          >
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="form-group">
+          <label for="loginPassword" class="form-label">Mot de passe</label>
+          <input 
+            type="password" 
+            id="loginPassword"
+            class="form-control" 
+            [(ngModel)]="password"
+            placeholder="Entrez votre mot de passe"
+          >
+        </div>
+
+        <!-- Bouton connexion -->
+        <button 
+          class="btn btn-continue w-100" 
+          (click)="onLogin()"
+          [disabled]="!email.trim() || !password.trim()"
+        >
+          Se connecter
+        </button>
+
+        <!-- Trouble signing -->
+        <div class="trouble-signing">
+          <a href="#" (click)="onTroubleSigning()" class="text-decoration-underline">
+            Mot de passe oublié ?
+          </a>
+        </div>
+
+        <!-- Lien vers inscription -->
+        <div class="switch-mode">
+          <p>Pas encore de compte ? 
+            <a href="#" (click)="toggleMode()" class="fw-bold">S'inscrire</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- FORMULAIRE D'INSCRIPTION -->
+      <div *ngIf="!isLoginMode">
+        <!-- Email -->
+        <div class="form-group">
+          <label for="registerEmail" class="form-label">Email</label>
+          <input 
+            type="email" 
+            id="registerEmail"
+            class="form-control" 
+            [(ngModel)]="registerData.email"
+            placeholder="Entrez votre email"
+          >
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="form-group">
+          <label for="registerPassword" class="form-label">Mot de passe</label>
+          <input 
+            type="password" 
+            id="registerPassword"
+            class="form-control" 
+            [(ngModel)]="registerData.mot_de_passe"
+            placeholder="Créez un mot de passe"
+          >
+        </div>
+
+        <!-- Nom -->
+        <div class="form-group">
+          <label for="registerNom" class="form-label">Nom complet</label>
+          <input 
+            type="text" 
+            id="registerNom"
+            class="form-control" 
+            [(ngModel)]="registerData.nom"
+            placeholder="Entrez votre nom complet"
+          >
+        </div>
+
+        <!-- Téléphone -->
+        <div class="form-group">
+          <label for="registerTelephone" class="form-label">Téléphone</label>
+          <input 
+            type="tel" 
+            id="registerTelephone"
+            class="form-control" 
+            [(ngModel)]="registerData.telephone"
+            placeholder="Entrez votre numéro de téléphone"
+          >
+        </div>
+
+        <!-- Bouton inscription -->
+        <button 
+          class="btn btn-continue w-100" 
+          (click)="onRegister()"
+          [disabled]="!registerData.email.trim() || !registerData.mot_de_passe.trim() || !registerData.nom.trim() || !registerData.telephone.trim()"
+        >
+          S'inscrire
+        </button>
+
+        <!-- Lien vers connexion -->
+        <div class="switch-mode">
+          <p>Déjà un compte ? 
+            <a href="#" (click)="toggleMode()" class="fw-bold">Se connecter</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>Ou continuer avec</span>
+      </div>
+
+      <!-- Social login buttons -->
+      <div class="social-buttons">
+        <button class="btn btn-social" (click)="onGoogleLogin()">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google">
+        </button>
+        
+        <button class="btn btn-social" (click)="onFacebookLogin()">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook">
+        </button>
+        
+        <button class="btn btn-social" (click)="onAppleLogin()">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg" alt="Apple">
+        </button>
+        
+      </div>
+<!-- Terms & Privacy -->
+<div class="terms-section">
+  <p class="small text-muted">
+    En continuant, vous confirmez que vous êtes adulte et que vous avez lu et accepté les 
+    <a href="#">Conditions d'utilisation</a> et la <a href="#">Politique de confidentialité</a> de BTP Store.
+    Vos informations peuvent être utilisées à des fins marketing, mais vous pouvez vous désabonner.
+  </p>
+</div>
+      
+
+    </div>
+  </div>
+</div>

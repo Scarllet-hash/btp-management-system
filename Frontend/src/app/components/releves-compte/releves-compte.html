@@ -1,0 +1,216 @@
+<!-- src/app/components/releves-compte/releves-compte.component.html -->
+<div class="releves-compte-container">
+  
+  <!-- En-tête avec bouton d'exportation -->
+  <div class="page-header">
+    <h2 class="page-title">Revenus de compte</h2>
+    <button class="header-export-btn" (click)="openExportModal()">
+      EXPORTATION DES TRANSACTIONS
+    </button>
+  </div>
+  
+  <!-- Section des revenus - MISE À JOUR avec alignement horizontal -->
+  <div class="revenus-section">
+    <div class="revenus-cards">
+      <div class="revenu-card">
+        <div class="card-content">
+          <div class="amount">0.00 MAD</div>
+          <div class="label">Chiffre d'affaire</div>
+          <div class="indicator neutral">→ 0%</div>
+        </div>
+      </div>
+      
+      <div class="revenu-card">
+        <div class="card-content">
+          <div class="amount">0</div>
+          <div class="label">Produits vendus</div>
+          <div class="indicator neutral">→ 0%</div>
+        </div>
+      </div>
+      
+      <div class="revenu-card">
+        <div class="card-content">
+          <div class="amount">0</div>
+          <div class="label">Catalogue en ligne</div>
+          <div class="indicator neutral">
+            <span class="status-badge">À venir</span>
+            <span>→ 0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Navigation des onglets -->
+  <div class="tabs-navigation">
+    <button 
+      *ngFor="let tab of tabs" 
+      class="tab-btn"
+      [class.active]="activeTab === tab.key"
+      (click)="setActiveTab(tab.key)">
+      {{ tab.label }}
+    </button>
+  </div>
+  
+  <!-- Contenu principal -->
+  <div class="main-content">
+    
+    <!-- Section Aperçu (tab par défaut) -->
+    <div *ngIf="activeTab === 'apercu'" class="tab-content">
+      <div class="apercu-content">
+        <div class="left-panel">
+          <div class="activite-header">
+            <span>Activité / Retraits / Détail</span>
+          </div>
+          <div class="no-activity">
+            <p>Aucune activité de compte à lister.</p>
+          </div>
+        </div>
+        
+        <div class="right-panel">
+          <div class="notifications-header">
+            <span>Notifications</span>
+          </div>
+          <div class="notifications-empty">
+            <!-- Zone vide pour les notifications -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section EN COURS -->
+    <div *ngIf="activeTab === 'en-cours'" class="tab-content">
+      <div class="en-cours-content">
+        <div class="no-activity">
+          <p>Aucune transaction en cours à afficher !</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section PAYÉ -->
+    <div *ngIf="activeTab === 'paye'" class="tab-content">
+      <div class="paye-content">
+        <div class="no-activity">
+          <p>Aucune transaction payée à afficher !</p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Section Exportations de transactions (séparée) -->
+  <div class="exportations-section">
+    <div class="section-header">
+      <h2 class="section-title">Exportations de transactions</h2>
+    </div>
+    
+    <div class="exportations-table-container">
+      <table class="exportations-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Demandé</th>
+            <th>Créé</th>
+            <th>Statut</th>
+            <th>Télécharger</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="no-exportations-row">
+            <td colspan="5" class="no-exportations-cell">
+              <div class="no-exportations-message">
+                Aucune exportation à afficher !
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <!-- Pagination -->
+      <div class="pagination-container">
+        <span class="page-info">Items par page: 5</span>
+        <span class="page-count">0 of 0</span>
+        <div class="pagination-controls">
+          <button class="pagination-btn" disabled>‹‹</button>
+          <button class="pagination-btn" disabled>‹</button>
+          <button class="pagination-btn" disabled>›</button>
+          <button class="pagination-btn" disabled>››</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal d'exportation -->
+  <div *ngIf="showExportModal" class="modal-overlay" (click)="closeExportModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>EXPORTATION DES TRANSACTIONS</h3>
+        <button class="close-btn" (click)="closeExportModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="modal-description">
+          Pour exporter les transactions, les filtres suivants doivent être complétés. La plage de dates maximale pour l'exportation est de 6 mois.
+        </p>
+        
+        <form class="export-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date de début *</label>
+              <input 
+                type="date" 
+                class="date-input"
+                [(ngModel)]="exportForm.dateDebut"
+                name="dateDebut"
+                placeholder="Choisissez une date de début">
+            </div>
+            
+            <div class="form-group">
+              <label>Date de fin *</label>
+              <input 
+                type="date" 
+                class="date-input"
+                [(ngModel)]="exportForm.dateFin"
+                name="dateFin"
+                placeholder="Date de fin">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Statut de paiement *</label>
+              <div class="checkbox-group">
+                <label class="checkbox-item">
+                  <input 
+                    type="checkbox" 
+                    [(ngModel)]="exportForm.payeChecked"
+                    name="payeChecked">
+                  <span class="checkmark"></span>
+                  payé
+                </label>
+                <label class="checkbox-item">
+                  <input 
+                    type="checkbox" 
+                    [(ngModel)]="exportForm.nonPayeChecked"
+                    name="nonPayeChecked">
+                  <span class="checkmark"></span>
+                  non payé
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeExportModal()">
+          FERMER
+        </button>
+        <button class="btn-primary" (click)="exportTransactions()">
+          EXPORTER
+        </button>
+      </div>
+    </div>
+  </div>
+  
+</div>

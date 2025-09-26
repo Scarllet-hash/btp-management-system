@@ -5,9 +5,15 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:dev": "ng build --configuration=development",
+    "build:ssr": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:civil_rpoject": "node dist/civil_rpoject/server/server.mjs"
+    "serve:ssr": "node dist/civil_rpoject/server/server.mjs",
+    "serve:ssr:civil_rpoject": "node dist/civil_rpoject/server/server.mjs",
+    "clean": "ng cache clean",
+    "dev:no-ssr": "ng serve --configuration=development",
+    "build:no-ssr": "ng build --output-mode=static"
   },
   "prettier": {
     "printWidth": 100,
@@ -31,9 +37,11 @@
     "@angular/platform-server": "^20.2.0",
     "@angular/router": "^20.2.0",
     "@angular/ssr": "^20.2.2",
+    "bootstrap": "^5.3.8",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "zone.js": "^0.15.1"
   },
   "devDependencies": {
     "@angular/build": "^20.2.2",

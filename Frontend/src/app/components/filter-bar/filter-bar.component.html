@@ -1,0 +1,40 @@
+<div class="filter-bar-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="filter-card">
+          <div class="filter-header">
+            <h4 class="filter-title">
+              <i class="fas fa-filter me-2"></i>
+              Filtrer par catégorie
+            </h4>
+          </div>
+          
+          <div class="filter-content">
+            <!-- Bouton "Tous les produits" -->
+            <button 
+              class="btn filter-btn me-2 mb-2"
+              [class.active]="selectedCategory === 'all'"
+              (click)="onCategoryChange('all')">
+              <i class="fas fa-th-large me-1"></i>
+              Tous les produits
+            </button>
+
+            <!-- Boutons de catégories -->
+            <button 
+              *ngFor="let category of categories"
+              class="btn filter-btn me-2 mb-2"
+              [class.active]="selectedCategory === category"
+              (click)="onCategoryChange(category)">
+              <i class="fas fa-tools me-1" *ngIf="category === 'electronics'"></i>
+              <i class="fas fa-gem me-1" *ngIf="category === 'jewelery'"></i>
+              <i class="fas fa-hard-hat me-1" *ngIf="category === 'men\'s clothing'"></i>
+              <i class="fas fa-vest me-1" *ngIf="category === 'women\'s clothing'"></i>
+              {{ getCategoryDisplayName(category) }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
