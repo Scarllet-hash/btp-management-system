@@ -3,7 +3,6 @@ package com.project.btp.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -25,4 +24,8 @@ public class Produit {
     @ManyToOne
     @JoinColumn(name = "entreprise_btp_id")
     private EntrepriseBTP entrepriseBTP;
+
+    @ManyToOne
+    @JoinColumn(name = "categorie_id")
+    private Categorie categorie;
 }

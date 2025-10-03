@@ -1,5 +1,5 @@
 /* src/app/auth-modal/auth-modal.component.scss */
-
+@use "sass:color";
 $primary-color: #FFFF00;    // Jaune - couleur primaire
 $secondary-color: #8BC34A;  // Vert - couleur secondaire
 
@@ -357,7 +357,7 @@ $secondary-color: #8BC34A;  // Vert - couleur secondaire
   color: #333;
 
   &:hover:not(:disabled) {
-    background-color: darken($secondary-color, 10%);
+    background-color: color.adjust($secondary-color, $lightness: -10%);
   }
 
   &:disabled {
@@ -475,7 +475,7 @@ $secondary-color: #8BC34A;  // Vert - couleur secondaire
     text-decoration: underline;
 
     &:hover {
-      color: darken($secondary-color, 15%);
+      color: color.adjust($secondary-color, $lightness: -15%);
     }
   }
 }

@@ -12,9 +12,21 @@ import { Product } from '../../models/product';
 export class ProductCardComponent {
   @Input() product!: Product;
   @Output() addToCart = new EventEmitter<Product>();
+  
+  // Add the missing isLoading property
+  isLoading = false;
 
   onAddToCart(): void {
+    // Set loading state while adding to cart
+    this.isLoading = true;
+    
+    // Emit the product
     this.addToCart.emit(this.product);
+    
+    // Reset loading state after a short delay (simulate API call)
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 1000);
   }
 
   getStars(rating: number): number[] {
