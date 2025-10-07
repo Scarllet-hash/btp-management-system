@@ -9,8 +9,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -28,11 +26,9 @@ public class Utilisateur {
     private String motDePasse;
 
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<Annonce> annonces;
 
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<Commande> commandes;
 
     // Getters & Setters

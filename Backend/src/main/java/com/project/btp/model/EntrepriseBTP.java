@@ -6,8 +6,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -20,6 +18,5 @@ public class EntrepriseBTP extends Utilisateur {
     private String typeActivite;
 
     @OneToMany(mappedBy = "entrepriseBTP", cascade = CascadeType.ALL)
-     @JsonIgnore
     private List<Produit> produits;
 }

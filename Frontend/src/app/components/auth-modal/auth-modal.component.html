@@ -71,66 +71,74 @@
         </div>
       </div>
 
-      <!-- FORMULAIRE D'INSCRIPTION -->
+  <!-- Inscription -->
       <div *ngIf="!isLoginMode">
-        <!-- Email -->
-        <div class="form-group">
-          <label for="registerEmail" class="form-label">Email</label>
-          <input 
-            type="email" 
-            id="registerEmail"
-            class="form-control" 
-            [(ngModel)]="registerData.email"
-            placeholder="Entrez votre email"
-          >
-        </div>
+         <!-- Champ Type -->
+  <div class="form-group">
+    <label for="registerType" class="form-label">Type</label>
+    <select 
+      id="registerType" 
+      class="form-control" 
+      [(ngModel)]="registerData.type">
+      <option value="" disabled selected>-- Sélectionnez un type --</option>
+      <option value="Personne">Personne</option>
+      <option value="Entreprise BTP">Entreprise BTP</option>
+      <option value="Entreprise de recyclage">Entreprise de recyclage</option>
+    </select>
+  </div>
 
-        <!-- Mot de passe -->
-        <div class="form-group">
-          <label for="registerPassword" class="form-label">Mot de passe</label>
-          <input 
-            type="password" 
-            id="registerPassword"
-            class="form-control" 
-            [(ngModel)]="registerData.mot_de_passe"
-            placeholder="Créez un mot de passe"
-          >
-        </div>
+  <!-- Champs COMMUNS pour tous les types -->
+  <div class="form-group">
+    <label for="registerEmail" class="form-label">Email</label>
+    <input type="email" id="registerEmail" class="form-control" [(ngModel)]="registerData.email" placeholder="Entrez votre email">
+  </div>
+  <div class="form-group">
+    <label for="registerPassword" class="form-label">Mot de passe</label>
+    <input type="password" id="registerPassword" class="form-control" [(ngModel)]="registerData.mot_de_passe" placeholder="Créez un mot de passe">
+  </div>
+  <div class="form-group">
+    <label for="registerNom" class="form-label">Nom complet</label>
+    <input type="text" id="registerNom" class="form-control" [(ngModel)]="registerData.nom" placeholder="Entrez votre nom complet">
+  </div>
+  <div class="form-group">
+    <label for="registerTelephone" class="form-label">Téléphone</label>
+    <input type="tel" id="registerTelephone" class="form-control" [(ngModel)]="registerData.telephone" placeholder="Entrez votre numéro de téléphone">
+  </div>
 
-        <!-- Nom -->
-        <div class="form-group">
-          <label for="registerNom" class="form-label">Nom complet</label>
-          <input 
-            type="text" 
-            id="registerNom"
-            class="form-control" 
-            [(ngModel)]="registerData.nom"
-            placeholder="Entrez votre nom complet"
-          >
-        </div>
+  <!-- Champs pour Entreprise BTP -->
+  <ng-container *ngIf="registerData.type === 'Entreprise BTP'">
+    <div class="form-group">
+      <label for="registerSiret" class="form-label">SIRET</label>
+      <input type="text" id="registerSiret" class="form-control" [(ngModel)]="registerData.siret" placeholder="Numéro SIRET">
+    </div>
+    <div class="form-group">
+      <label for="registerActivite" class="form-label">Type d'activité</label>
+      <input type="text" id="registerActivite" class="form-control" [(ngModel)]="registerData.type_activite" placeholder="Type d'activité">
+    </div>
+  </ng-container>
 
-        <!-- Téléphone -->
-        <div class="form-group">
-          <label for="registerTelephone" class="form-label">Téléphone</label>
-          <input 
-            type="tel" 
-            id="registerTelephone"
-            class="form-control" 
-            [(ngModel)]="registerData.telephone"
-            placeholder="Entrez votre numéro de téléphone"
-          >
-        </div>
+  <!-- Champs pour Entreprise de recyclage -->
+  <ng-container *ngIf="registerData.type === 'Entreprise de recyclage'">
+    <div class="form-group">
+      <label for="registerLicence" class="form-label">Licence</label>
+      <input type="text" id="registerLicence" class="form-control" [(ngModel)]="registerData.licence" placeholder="Numéro de licence">
+    </div>
+    <div class="form-group">
+      <label for="registerCapacite" class="form-label">Capacité de traitement</label>
+      <input type="text" id="registerCapacite" class="form-control" [(ngModel)]="registerData.capacite_traitement" placeholder="Capacité de traitement">
+    </div>
+  </ng-container>
 
-        <!-- Bouton inscription -->
-        <button 
-          class="btn btn-continue w-100" 
-          (click)="onRegister()"
-          [disabled]="!registerData.email.trim() || !registerData.mot_de_passe.trim() || !registerData.nom.trim() || !registerData.telephone.trim()"
-        >
-          S'inscrire
-        </button>
+  <!-- Bouton inscription -->
+  <button 
+    class="btn btn-continue w-100" 
+    (click)="onRegister()"
+    [disabled]="!registerData.type || isRegisterDisabled()"
+  >
+    S'inscrire
+  </button>
 
-        <!-- Lien vers connexion -->
+        <!-- Switch vers connexion -->
         <div class="switch-mode">
           <p>Déjà un compte ? 
             <a href="#" (click)="toggleMode()" class="fw-bold">Se connecter</a>
