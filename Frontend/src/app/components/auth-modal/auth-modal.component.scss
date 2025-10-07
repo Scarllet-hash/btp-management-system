@@ -1,0 +1,525 @@
+/* src/app/auth-modal/auth-modal.component.scss */
+@use "sass:color";
+$primary-color: #FFFF00;    // Jaune - couleur primaire
+$secondary-color: #8BC34A;  // Vert - couleur secondaire
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid #eee;
+
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+  }
+
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    color: #666;
+
+    &:hover {
+      color: #333;
+    }
+  }
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.info-protection {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  font-size: 0.9rem;
+  color: $secondary-color;
+}
+
+.form-group {
+  margin-bottom: 20px;
+
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+    display: block;
+  }
+
+  .form-control {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 1rem;
+    width: 100%;
+
+    &:focus {
+      border-color: $secondary-color;
+      box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.2);
+      outline: none;
+    }
+  }
+}
+
+.btn-continue {
+  background-color: $primary-color;
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: black;
+
+  &:hover:not(:disabled) {
+    background-color: #e6e600;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.trouble-signing {
+  text-align: center;
+  margin-bottom: 20px;
+
+  a {
+    color: #666;
+    font-size: 0.9rem;
+
+    &:hover {
+      color: $secondary-color;
+    }
+  }
+}
+
+.switch-mode {
+  text-align: center;
+  margin-bottom: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+
+  p {
+    margin: 0;
+    color: #666;
+  }
+
+  a {
+    color: $secondary-color;
+    text-decoration: none;
+
+    &:hover {
+      color: #7CB342;
+      text-decoration: underline;
+    }
+  }
+}
+
+.divider {
+  text-align: center;
+  margin: 25px 0;
+  position: relative;
+  color: #666;
+  font-size: 0.9rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #eee;
+    z-index: 1;
+  }
+
+  span {
+    background-color: white;
+    padding: 0 15px;
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+
+  .btn-social {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+
+    i {
+      font-size: 20px;
+      color: #333;
+    }
+
+    &:hover {
+      border-color: $secondary-color;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.location-section {
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+    display: block;
+  }
+
+  .form-select {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+    width: 100%;
+
+    &:focus {
+      border-color: $secondary-color;
+      box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.2);
+      outline: none;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 576px) {
+  .modal-content {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .modal-header,
+  .modal-body {
+    padding: 20px;
+  }
+
+  .social-buttons {
+    gap: 10px;
+
+    .btn-social {
+      width: 45px;
+      height: 45px;
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
+
+      i {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid #eee;
+
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+  }
+
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    color: #666;
+
+    &:hover {
+      color: #333;
+    }
+  }
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.info-protection {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  font-size: 0.9rem;
+  color: #28a745;
+}
+
+.email-section {
+  margin-bottom: 20px;
+
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+  }
+
+  .form-control {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 1rem;
+
+    &:focus {
+      border-color: $secondary-color;
+      box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.2);
+    }
+  }
+}
+
+.btn-continue {
+  background-color: $secondary-color;
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #333;
+
+  &:hover:not(:disabled) {
+    background-color: color.adjust($secondary-color, $lightness: -10%);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.trouble-signing {
+  text-align: center;
+  margin-bottom: 25px;
+
+  a {
+    color: #666;
+    font-size: 0.9rem;
+
+    &:hover {
+      color: $secondary-color;
+    }
+  }
+}
+
+.divider {
+  text-align: center;
+  margin: 25px 0;
+  position: relative;
+  color: #666;
+  font-size: 0.9rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #eee;
+    z-index: 1;
+  }
+
+  span {
+    background-color: white;
+    padding: 0 15px;
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+
+  .btn-social {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+
+    i {
+      font-size: 20px;
+      color: #333;
+    }
+
+    &:hover {
+      border-color: $secondary-color;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.location-section {
+  margin-bottom: 20px;
+
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+  }
+
+  .form-select {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+
+    &:focus {
+      border-color: $secondary-color;
+      box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.2);
+    }
+  }
+}
+
+.terms-section {
+  margin-bottom: 15px;
+
+  p {
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  a {
+    color: $secondary-color;
+    text-decoration: underline;
+
+    &:hover {
+      color: color.adjust($secondary-color, $lightness: -15%);
+    }
+  }
+}
+
+.locator-section {
+  text-align: center;
+
+  a {
+    color: #666;
+    font-size: 0.9rem;
+
+    &:hover {
+      color: $secondary-color;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 576px) {
+  .modal-content {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .modal-header,
+  .modal-body {
+    padding: 20px;
+  }
+
+  .social-buttons {
+    gap: 10px;
+
+    .btn-social {
+      width: 45px;
+      height: 45px;
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
+
+      i {
+        font-size: 18px;
+      }
+    }
+  }
+}
