@@ -1,4 +1,4 @@
-package com.project.btp.Repositories;
+package com.project.btp.repository;
 
 import com.project.btp.model.EntrepriseRecyclage;
 import org.springframework.data.jpa.repository.JpaRepository;
