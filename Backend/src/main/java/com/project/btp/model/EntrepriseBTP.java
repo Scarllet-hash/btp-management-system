@@ -18,5 +18,6 @@ public class EntrepriseBTP extends Utilisateur {
     private String typeActivite;
 
     @OneToMany(mappedBy = "entrepriseBTP", cascade = CascadeType.ALL)
+    
     private List<Produit> produits;
 }

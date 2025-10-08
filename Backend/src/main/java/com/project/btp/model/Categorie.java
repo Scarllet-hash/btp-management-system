@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -18,5 +20,6 @@ public class Categorie {
     private String description;
 
     @OneToMany(mappedBy = "categorie", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Produit> produits;
 }

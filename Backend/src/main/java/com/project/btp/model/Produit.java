@@ -3,6 +3,8 @@ package com.project.btp.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Data
 @NoArgsConstructor
@@ -23,9 +25,11 @@ public class Produit {
 
     @ManyToOne
     @JoinColumn(name = "entreprise_btp_id")
+    @JsonIgnore
     private EntrepriseBTP entrepriseBTP;
 
     @ManyToOne
     @JoinColumn(name = "categorie_id")
+    @JsonIgnore
     private Categorie categorie;
 }
