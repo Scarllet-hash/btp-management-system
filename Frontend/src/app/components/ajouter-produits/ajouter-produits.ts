@@ -1,12 +1,13 @@
-// src/app/ajouter-produits/ajouter-produits.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { CategorieService, Categorie } from '../../services/categorie.service';
 
 interface Product {
   nom: string;
-  categorie: string;
+  categorie: number | null; // Utilise l'id de la catégorie
   prix: number;
   quantite: number;
   description: string;
@@ -21,13 +22,17 @@ interface Product {
   templateUrl: './ajouter-produits.html',
   styleUrls: ['./ajouter-produits.scss']
 })
-export class AjouterProduitsComponent {
-  
-  constructor(private router: Router) {}
+export class AjouterProduitsComponent implements OnInit {
+
+  constructor(
+    private categorieService: CategorieService,
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
   product: Product = {
     nom: '',
-    categorie: '',
+    categorie: null,
     prix: 0,
     quantite: 0,
     description: '',
@@ -35,30 +40,30 @@ export class AjouterProduitsComponent {
     images: []
   };
 
-  categories = [
-    'Matériaux de construction',
-    'Outils et équipements',
-    'Électricité & Éclairage',
-    'Plomberie & Sanitaire',
-    'Peinture & Revêtements',
-    'Menuiserie & Bois',
-    'Sécurité & Protection',
-    'Machines & Engins'
-  ];
-
-  etats = [
-    { value: 'neuf', label: 'Neuf' },
-    { value: 'bonne', label: 'Bonne état' },
-    { value: 'mauvaise', label: 'Mauvaise état' }
-  ];
-
+  categories: any[] = [];
+  etats: { value: string, label: string }[] = [];
   selectedImages: string[] = [];
-  
+
   // États pour gérer les étapes
-  currentStep = 1; // Étape actuelle (1 ou 2)
-  showForm = false; // Affiche les champs nom/catégorie quand true
-  showSpecificationForm = false; // Affiche l'étape 2 quand true
+  currentStep = 1;
+  showForm = false;
+  showSpecificationForm = false;
   showSuccessModal = false;
+
+ ngOnInit() {
+    this.categorieService.getCategories().subscribe(
+      res => {
+        this.categories = res;
+        console.log('Catégories chargées:', res);
+      },
+      err => {
+        console.error('Erreur lors du chargement des catégories', err);
+      }
+    );
+  }
+  formatEtat(etat: string): string {
+    return etat.replace('_', ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase());
+  }
 
   onCategoryChange() {
     this.checkFormDisplay();
@@ -71,35 +76,19 @@ export class AjouterProduitsComponent {
   checkFormDisplay() {
     if (this.product.nom.trim() && this.product.categorie) {
       this.showForm = true;
-      this.currentStep = 2; // Passe automatiquement à l'étape 2
-      this.showSpecificationForm = true; // Affiche les champs détaillés
+      this.currentStep = 2;
+      this.showSpecificationForm = true;
     } else {
       this.showForm = false;
       this.showSpecificationForm = false;
-      this.currentStep = 1; // Retourne à l'étape 1 si incomplet
+      this.currentStep = 1;
     }
   }
 
-  // Nouvelle méthode pour passer à l'étape 2
-  proceedToSpecification() {
-    if (this.isStep1Valid()) {
-      this.currentStep = 2;
-      this.showSpecificationForm = true;
-    }
-  }
-
-  // Retour à l'étape 1
-  backToInformation() {
-    this.currentStep = 1;
-    this.showSpecificationForm = false;
-  }
-
-  // Validation étape 1 (nom + catégorie + au moins une image optionnelle)
   isStep1Valid(): boolean {
     return !!(this.product.nom.trim() && this.product.categorie);
   }
 
-  // Validation étape 2 (tous les champs requis)
   isStep2Valid(): boolean {
     return !!(
       this.product.prix > 0 &&
@@ -109,7 +98,6 @@ export class AjouterProduitsComponent {
     );
   }
 
-  // Validation complète du formulaire
   isFormValid(): boolean {
     return this.isStep1Valid() && this.isStep2Valid();
   }
@@ -119,13 +107,13 @@ export class AjouterProduitsComponent {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       const reader = new FileReader();
-      
+
       reader.onload = (e) => {
         this.selectedImages[index] = e.target?.result as string;
       };
-      
+
       reader.readAsDataURL(file);
-      
+
       if (!this.product.images) {
         this.product.images = [];
       }
@@ -141,10 +129,29 @@ export class AjouterProduitsComponent {
   }
 
   onSubmit() {
-    if (this.isFormValid()) {
-      console.log('Produit à ajouter:', this.product);
-      this.showSuccessModal = true;
-    }
+    if (!this.isFormValid()) return;
+
+    const formData = new FormData();
+    // Attention: le backend attend un champ "produit" avec un JSON, et "images" pour chaque fichier
+    formData.append('produit', new Blob([JSON.stringify({
+      nom: this.product.nom,
+      categorieId: this.product.categorie,
+      prix: this.product.prix,
+      quantite: this.product.quantite,
+      etat: this.product.etat,
+      description: this.product.description
+    })], { type: 'application/json' }));
+
+    (this.product.images || []).forEach((file, i) => {
+      if (file) {
+        formData.append('images', file, file.name);
+      }
+    });
+
+    this.http.post('http://localhost:8080/produits', formData).subscribe({
+      next: () => this.showSuccessModal = true,
+      error: () => alert('Erreur lors de l\'ajout du produit')
+    });
   }
 
   closeSuccessModal() {
@@ -157,7 +164,6 @@ export class AjouterProduitsComponent {
   }
 
   accederGestion() {
-    console.log('Navigation vers gérer produits');
     this.router.navigate(['/vendor-dashboard/gerer-produits']);
     this.closeSuccessModal();
   }
@@ -165,7 +171,7 @@ export class AjouterProduitsComponent {
   resetForm() {
     this.product = {
       nom: '',
-      categorie: '',
+      categorie: null,
       prix: 0,
       quantite: 0,
       description: '',

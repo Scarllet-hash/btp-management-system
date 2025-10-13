@@ -1,8 +1,9 @@
 package com.project.btp.model;
-
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
@@ -32,4 +33,7 @@ public class Produit {
     @JoinColumn(name = "categorie_id")
     @JsonIgnore
     private Categorie categorie;
+    @OneToMany(mappedBy = "produit", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ProduitImage> images = new ArrayList<>();
 }

@@ -20,4 +20,8 @@ public class EntrepriseBTP extends Utilisateur {
     @OneToMany(mappedBy = "entrepriseBTP", cascade = CascadeType.ALL)
     
     private List<Produit> produits;
+        @OneToOne // ou @ManyToOne selon ton modèle (souvent OneToOne)
+    @JoinColumn(name = "utilisateur_id")
+    private Utilisateur utilisateur;
 }
+

@@ -88,7 +88,7 @@ onLogin() {
       next: (res: any) => {
         // alert('Connexion réussie !');
         this.onClose();
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/vendor-dashboard']);
       },
       error: (err) => {
         if (err.error && typeof err.error === "string") {
