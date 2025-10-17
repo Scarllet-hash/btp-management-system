@@ -3,6 +3,8 @@ package com.project.btp.repository;
 import com.project.btp.model.Produit;
 import com.project.btp.model.Categorie;
 import com.project.btp.model.EntrepriseBTP;
+
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -28,4 +30,6 @@ public interface ProduitRepository extends JpaRepository<Produit, Long> {
 
     // Trouver les produits dont la quantité est inférieure à une valeur donnée
     List<Produit> findByQuantiteLessThan(Integer quantite);
+    @Query(value = "SHOW COLUMNS FROM produit WHERE Field = 'etat'", nativeQuery = true)
+    Object findEnumEtatColumn();
 }

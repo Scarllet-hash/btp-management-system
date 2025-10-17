@@ -17,6 +17,9 @@ export class ProductService {
   getProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.apiUrl);
   }
+  getEtats() {
+  return this.http.get<string[]>('http://localhost:8080/api/produits/etats');
+}
 
   // Obtenir un produit par ID
   getProductById(id: number): Observable<Product> {

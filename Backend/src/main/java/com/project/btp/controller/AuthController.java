@@ -88,6 +88,20 @@ public ResponseEntity<?> login(@RequestBody LoginRequest request) {
     if (!passwordEncoder.matches(request.getMotDePasse(), user.getMotDePasse())) {
         return ResponseEntity.status(401).body(Map.of("message", "Mot de passe incorrect !"));
     }
-    return ResponseEntity.ok(Map.of("message", "Connexion réussie !"));
+
+    // Si user est une entreprise BTP, renvoyer aussi son ID
+    Long entrepriseBtpId = null;
+    if (user instanceof EntrepriseBTP) {
+        entrepriseBtpId = ((EntrepriseBTP) user).getId();
+    }
+
+    return ResponseEntity.ok(Map.of(
+        "message", "Connexion réussie !",
+        "id", user.getId(),
+        "email", user.getEmail(),
+        "nom", user.getNom(),
+        "type", user instanceof EntrepriseBTP ? "Entreprise BTP" : "Personne",
+        "entrepriseBtpId", entrepriseBtpId
+    ));
 }
 }

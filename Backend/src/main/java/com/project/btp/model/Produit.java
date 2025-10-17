@@ -4,7 +4,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Data
@@ -31,6 +31,7 @@ public class Produit {
 
     @ManyToOne
     @JoinColumn(name = "categorie_id")
+    @JsonManagedReference // ← Ajouter ici
     @JsonIgnore
     private Categorie categorie;
     @OneToMany(mappedBy = "produit", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -12,4 +12,5 @@ public class ProduitDTO {
     private BigDecimal prix;
     private String etat;
     private Long categorieId; // id catégorie choisi
+    private Long entrepriseBtpId; 
 } 
