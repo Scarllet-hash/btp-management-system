@@ -21,6 +21,9 @@ export class ProductService {
   constructor(private http: HttpClient) {
     this.loadCartFromStorage();
   }
+  getEtats() {
+  return this.http.get<string[]>('http://localhost:8080/api/produits/etats');
+}
 
   getAllProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.apiUrl}/produits`); // ✅ Changé de /products à /produits

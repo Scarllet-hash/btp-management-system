@@ -1,5 +1,5 @@
 package com.project.btp.model;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -20,6 +20,7 @@ public class Categorie {
     private String description;
 
     @OneToMany(mappedBy = "categorie", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference // ← Ajouter ici
     @JsonIgnore
     private List<Produit> produits;
 }
