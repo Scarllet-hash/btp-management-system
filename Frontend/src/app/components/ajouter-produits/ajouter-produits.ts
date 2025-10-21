@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { CategorieService, Categorie } from '../../services/categorie.service';
+// import { CategorieService, Categorie } from '../../services/categorie.service';
 
 interface Product {
   nom: string;
@@ -22,10 +22,10 @@ interface Product {
   templateUrl: './ajouter-produits.html',
   styleUrls: ['./ajouter-produits.scss']
 })
-export class AjouterProduitsComponent implements OnInit {
+export class AjouterProduitsComponent  {
 
   constructor(
-    private categorieService: CategorieService,
+    // private categorieService: CategorieService,
     private router: Router,
     private http: HttpClient
   ) {}
@@ -50,17 +50,17 @@ export class AjouterProduitsComponent implements OnInit {
   showSpecificationForm = false;
   showSuccessModal = false;
 
- ngOnInit() {
-    this.categorieService.getCategories().subscribe(
-      res => {
-        this.categories = res;
-        console.log('Catégories chargées:', res);
-      },
-      err => {
-        console.error('Erreur lors du chargement des catégories', err);
-      }
-    );
-  }
+//  ngOnInit() {
+//     this.categorieService.getCategories().subscribe(
+//       res => {
+//         this.categories = res;
+//         console.log('Catégories chargées:', res);
+//       },
+//       err => {
+//         console.error('Erreur lors du chargement des catégories', err);
+//       }
+//     );
+//   }
   formatEtat(etat: string): string {
     return etat.replace('_', ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase());
   }

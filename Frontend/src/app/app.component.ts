@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { ProductService } from './services/product.service';
+// import { ProductService } from './services/product.service';
 
 @Component({
   selector: 'app-root',
@@ -23,13 +23,13 @@ import { ProductService } from './services/product.service';
 export class AppComponent implements OnInit {
   title = 'BTP-Store';
   currentRoute = '';
-  cartItemCount$: Observable<number>;
+  // cartItemCount$: Observable<number>;
 
   constructor(
     private router: Router,
-    private productService: ProductService
+    // private productService: ProductService
   ) {
-    this.cartItemCount$ = this.productService.getCartItemCount();
+    // this.cartItemCount$ = this.productService.getCartItemCount();
   }
 
   ngOnInit(): void {

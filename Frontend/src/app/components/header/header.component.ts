@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angula
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { ProductService } from '../../services/product.service';
+// import { ProductService } from '../../services/product.service';
 import { AuthModalComponent } from '../auth-modal/auth-modal.component';
 
 @Component({
@@ -20,12 +20,12 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   showAuthModal = false;
 
   constructor(
-    private productService: ProductService,
+    // private productService: ProductService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.cartItemCount$ = this.productService.getCartItemCount();
+    // this.cartItemCount$ = this.productService.getCartItemCount();
   }
 
   ngAfterViewInit(): void {

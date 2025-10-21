@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/produits")
+@RequestMapping("/produits")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProduitController {
 
@@ -73,4 +73,24 @@ public class ProduitController {
                      .map(Enum::name)
                      .collect(Collectors.toList());
     }
+@GetMapping
+public List<ProduitDTO> getAllProduits() {
+    List<Produit> produits = produitRepository.findAll();
+    List<ProduitDTO> dtos = new ArrayList<>();
+
+    for (Produit p : produits) {
+        ProduitDTO dto = new ProduitDTO();
+        dto.setNom(p.getNom());
+        dto.setDescription(p.getDescription());
+        dto.setQuantite(p.getQuantite());
+        dto.setPrix(p.getPrix());
+        dto.setEtat(p.getEtat() != null ? p.getEtat().name() : null);
+        dto.setCategorieId(p.getCategorie() != null ? p.getCategorie().getId() : null);
+        dtos.add(dto);
+    }
+
+    return dtos;
+}
+
+
 }

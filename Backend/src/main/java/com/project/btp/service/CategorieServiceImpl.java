@@ -1,6 +1,7 @@
 package com.project.btp.service;
 
 import com.project.btp.model.Categorie;
+import com.project.btp.model.Produit;
 import com.project.btp.repository.CategorieRepository;
 // import com.project.btp.service.CategorieService;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class CategorieServiceImpl implements CategorieService {
     public List<Categorie> getAllCategories() {
         return categorieRepository.findAll();
     }
-}
-    
-
+      @Override
+    public List<Produit> getProduitsByCategorie(Long categorieId) {
+        Categorie categorie = categorieRepository.findById(categorieId)
+                .orElseThrow(() -> new RuntimeException("Catégorie non trouvée"));
+        return categorie.getProduits();
+    }}

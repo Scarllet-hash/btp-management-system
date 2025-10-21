@@ -2,94 +2,115 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Product } from '../../models/product';
 import { ProductService } from '../../services/product.service';
-import { ProductCardComponent } from '../product-card/product-card.component';
+import { CategorieService, Categorie } from '../../services/categorie.service';
 import { FilterBarComponent } from '../filter-bar/filter-bar.component';
+import { ProductCardComponent } from '../product-card/product-card.component';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, ProductCardComponent, FilterBarComponent],
+  imports: [CommonModule, FilterBarComponent, ProductCardComponent],
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
-  filteredProducts: Product[] = [];
-  selectedCategory: string = 'all';
+  categories: Categorie[] = [];
+  selectedCategoryId: number | null = null;
   isLoading: boolean = false;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private categorieService: CategorieService
+  ) {}
 
   ngOnInit(): void {
-    this.loadProducts();
+    this.loadCategories();
+    this.loadAllProducts();
   }
 
-  getCategoryTitle(category: string): string {
-  const categoryTitles: { [key: string]: string } = {
-    'ciment': 'Ciments et Mortiers',
-    'outils': 'Outils et Équipements',
-    'isolation': 'Isolation et Étanchéité',
-    'plomberie': 'Plomberie et Sanitaires',
-    'all': 'Tous nos produits'
-  };
-  
-  return categoryTitles[category] || category;
-}
-  loadProducts(): void {
+  // Récupère les catégories
+  loadCategories(): void {
+    this.categorieService.getCategories().subscribe({
+      next: (data: Categorie[]) => {
+        this.categories = data;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des catégories', err);
+      }
+    });
+  }
+
+  // Récupère tous les produits
+  loadAllProducts(): void {
     this.isLoading = true;
-    this.productService.getProducts().subscribe({
-      next: (products) => {
-        this.products = products;
-        this.filteredProducts = products;
+    this.productService.getAllProducts().subscribe({
+      next: (data: Product[]) => {
+        this.products = data;
         this.isLoading = false;
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des produits:', error);
+      error: (err) => {
+        console.error('Erreur lors du chargement des produits', err);
         this.isLoading = false;
       }
     });
   }
 
-  onCategorySelected(category: string): void {
-    this.selectedCategory = category;
-    this.filterProducts();
+  // Récupère les produits par catégorie
+  loadProductsByCategory(categoryId: number): void {
+    this.isLoading = true;
+    this.categorieService.getProductsByCategory(categoryId).subscribe({
+      next: (data: Product[]) => {
+        this.products = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des produits', err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  onSortChanged(sortType: string): void {
-    this.sortProducts(sortType);
-  }
-
-  onAddToCart(product: Product): void {
-    this.productService.addToCart(product);
-    console.log('Produit ajouté au panier:', product);
-  }
-
-  private filterProducts(): void {
-    if (this.selectedCategory === 'all') {
-      this.filteredProducts = [...this.products];
+  // Appelé par FilterBarComponent
+  onCategoryChange(categoryId: number | null): void {
+    this.selectedCategoryId = categoryId;
+    if (categoryId === null) {
+      this.loadAllProducts();
     } else {
-      this.filteredProducts = this.products.filter(
-        product => product.category.toLowerCase() === this.selectedCategory.toLowerCase()
-      );
+      this.loadProductsByCategory(categoryId);
     }
   }
 
+  // Appelé par FilterBarComponent
+  onSortChange(sortType: string): void {
+    this.sortProducts(sortType);
+  }
+
+  // Tri en frontend
   private sortProducts(sortType: string): void {
     switch (sortType) {
       case 'price-asc':
-        this.filteredProducts.sort((a, b) => a.price - b.price);
+        this.products.sort((a, b) => a.prix - b.prix);
         break;
       case 'price-desc':
-        this.filteredProducts.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating':
-        this.filteredProducts.sort((a, b) => b.rating.rate - a.rating.rate);
+        this.products.sort((a, b) => b.prix - a.prix);
         break;
       case 'name':
-        this.filteredProducts.sort((a, b) => a.title.localeCompare(b.title));
+        this.products.sort((a, b) => a.nom.localeCompare(b.nom));
         break;
       default:
         break;
     }
   }
-}
+
+  // Ajoute au panier
+  onAddToCart(product: Product): void {
+    this.productService.addToCart(product);
+    console.log('Produit ajouté au panier:', product);
+  }
+getCategoryTitle(categoryId: number | null): string {
+    if (categoryId === null) return 'Tous nos produits';
+    
+    const category = this.categories.find(c => c.id === categoryId);
+    return category?.nom || 'Catégorie inconnue';}
+  }

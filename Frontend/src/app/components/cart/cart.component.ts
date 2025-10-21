@@ -1,77 +1,77 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { RouterModule } from '@angular/router'; // ✅ Ajoutez ceci
 import { Observable } from 'rxjs';
-import { ProductService } from '../../services/product.service';
-import { CartItem } from '../../models/product';
+import { ProductService, CartItem } from '../../services/product.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule], // ✅ Ajoutez RouterModule
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css']
 })
 export class CartComponent implements OnInit {
-  cartItems$: Observable<CartItem[]>;
-  cartTotal$: Observable<number>;
-  isLoading = false;
+  cartItems$!: Observable<CartItem[]>;
+  cartTotal$!: Observable<number>;
 
   constructor(
     private productService: ProductService,
     private router: Router
-  ) {
-    this.cartItems$ = this.productService.getCart();
+  ) {}
+
+  ngOnInit(): void {
+    this.cartItems$ = this.productService.cart$;
     this.cartTotal$ = this.productService.getCartTotal();
   }
 
-  ngOnInit(): void {
-    // Optionnel: Charger les données du panier au démarrage
+  // Augmente la quantité
+  increaseQuantity(productId: number, currentQuantity: number): void {
+    this.productService.updateQuantity(productId, currentQuantity + 1);
   }
 
-  updateQuantity(productId: number, quantity: number): void {
-    this.productService.updateQuantity(productId, quantity);
+  // Diminue la quantité
+  decreaseQuantity(productId: number, currentQuantity: number): void {
+    if (currentQuantity > 1) {
+      this.productService.updateQuantity(productId, currentQuantity - 1);
+    }
   }
 
-  removeFromCart(productId: number): void {
-    this.productService.removeFromCart(productId);
+  // Retire un article du panier
+  removeItem(productId: number): void {
+    if (confirm('Êtes-vous sûr de vouloir retirer cet article ?')) {
+      this.productService.removeFromCart(productId);
+    }
   }
 
+  // Vide le panier
   clearCart(): void {
-    if (confirm('Êtes-vous sûr de vouloir vider votre panier ?')) {
+    if (confirm('Êtes-vous sûr de vouloir vider le panier ?')) {
       this.productService.clearCart();
     }
   }
 
+  // Formatte le prix
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'MAD'
+    }).format(price);
+  }
+
+  // Calcule le sous-total d'un article
+  getItemSubtotal(item: CartItem): number {
+    return item.product.prix * item.quantity;
+  }
+
+  // Passe à la commande
   proceedToCheckout(): void {
     this.router.navigate(['/checkout']);
   }
 
+  // Retour aux achats
   continueShopping(): void {
-    // Solution 1: Navigation vers la page d'accueil (qui redirige vers /products)
-    this.router.navigate(['/']);
-    
-    // Ou Solution 2: Navigation directe vers /products
-    // this.router.navigate(['/products']);
-    
-    // Ou Solution 3: Si vous voulez forcer un rechargement complet
-    // window.location.href = '/products';
-  }
-
-  formatPrice(price: number): string {
-    return this.productService.formatPrice(price);
-  }
-
-  calculateItemTotal(item: CartItem): number {
-    return item.product.price * item.quantity;
-  }
-
-  onQuantityChange(event: Event, productId: number): void {
-    const input = event.target as HTMLInputElement;
-    const quantity = parseInt(input.value);
-    
-    if (quantity > 0) {
-      this.updateQuantity(productId, quantity);
-    }
+    this.router.navigate(['/products']);
   }
 }

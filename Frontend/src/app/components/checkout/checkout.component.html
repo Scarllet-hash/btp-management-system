@@ -1,451 +1,435 @@
 <div class="checkout-container">
-  <!-- Header -->
-  <div class="checkout-header">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <h1 class="checkout-title">
-            <i class="fas fa-lock me-3"></i>
-            Commande sécurisée
-          </h1>
-        </div>
-        <div class="col-md-6 text-md-end">
-          <a class="btn btn-outline-secondary" [routerLink]="['/cart']">
-            <i class="fas fa-arrow-left me-2"></i>
-            Retour au panier
-          </a>
-        </div>
+  <div class="container py-5">
+    <h2 class="mb-4">
+      <i class="fas fa-shopping-bag me-2"></i>
+      Finaliser ma commande
+    </h2>
+
+    <!-- Progress Steps -->
+    <div class="progress-steps mb-5">
+      <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+        <div class="step-number">1</div>
+        <div class="step-label">Informations</div>
+      </div>
+      <div class="step-line" [class.completed]="currentStep > 1"></div>
+      <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+        <div class="step-number">2</div>
+        <div class="step-label">Paiement</div>
+      </div>
+      <div class="step-line" [class.completed]="currentStep > 2"></div>
+      <div class="step" [class.active]="currentStep >= 3">
+        <div class="step-number">3</div>
+        <div class="step-label">Confirmation</div>
       </div>
     </div>
-  </div>
 
-  <!-- Progress Steps -->
-  <div class="progress-container">
-    <div class="container">
-      <div class="progress-steps">
-        <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
-          <div class="step-number">1</div>
-          <div class="step-label">Informations</div>
-        </div>
-        <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
-          <div class="step-number">2</div>
-          <div class="step-label">Paiement</div>
-        </div>
-        <div class="step" [class.active]="currentStep >= 3">
-          <div class="step-number">3</div>
-          <div class="step-label">Confirmation</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="checkout-content">
-    <div class="container">
-      <form [formGroup]="checkoutForm" (ngSubmit)="processPayment()">
-        <div class="row">
-          <!-- Left Column - Form Steps -->
-          <div class="col-lg-8">
-            
-            <!-- Step 1: Personal Information -->
-            <div class="checkout-step" *ngIf="currentStep === 1">
-              <div class="step-card">
-                <h3 class="step-title">
-                  <i class="fas fa-user me-3"></i>
+    <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <!-- Formulaire principal -->
+        <div class="col-lg-8">
+          
+          <!-- Étape 1: Informations -->
+          <div class="checkout-step" *ngIf="currentStep === 1">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-user me-2"></i>
                   Informations personnelles
-                </h3>
-                
+                </h5>
+              </div>
+              <div class="card-body">
                 <div class="row">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="form-label">Prénom *</label>
-                      <input type="text" 
-                             class="form-control"
-                             [class.is-invalid]="isFieldInvalid('firstName')"
-                             formControlName="firstName"
-                             placeholder="Votre prénom">
-                      <div class="invalid-feedback">{{ getFieldError('firstName') }}</div>
-                    </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Prénom *</label>
+                    <input 
+                      type="text" 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('firstName')"
+                      formControlName="firstName"
+                      placeholder="Votre prénom">
+                    <div class="invalid-feedback">{{ getFieldError('firstName') }}</div>
                   </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="form-label">Nom *</label>
-                      <input type="text" 
-                             class="form-control"
-                             [class.is-invalid]="isFieldInvalid('lastName')"
-                             formControlName="lastName"
-                             placeholder="Votre nom">
-                      <div class="invalid-feedback">{{ getFieldError('lastName') }}</div>
-                    </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Nom *</label>
+                    <input 
+                      type="text" 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('lastName')"
+                      formControlName="lastName"
+                      placeholder="Votre nom">
+                    <div class="invalid-feedback">{{ getFieldError('lastName') }}</div>
                   </div>
                 </div>
 
                 <div class="row">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="form-label">Email *</label>
-                      <input type="email" 
-                             class="form-control"
-                             [class.is-invalid]="isFieldInvalid('email')"
-                             formControlName="email"
-                             placeholder="votre.email@exemple.com">
-                      <div class="invalid-feedback">{{ getFieldError('email') }}</div>
-                    </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Email *</label>
+                    <input 
+                      type="email" 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('email')"
+                      formControlName="email"
+                      placeholder="votre@email.com">
+                    <div class="invalid-feedback">{{ getFieldError('email') }}</div>
                   </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="form-label">Téléphone *</label>
-                      <input type="tel" 
-                             class="form-control"
-                             [class.is-invalid]="isFieldInvalid('phone')"
-                             formControlName="phone"
-                             placeholder="0612345678">
-                      <div class="invalid-feedback">{{ getFieldError('phone') }}</div>
-                    </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Téléphone *</label>
+                    <input 
+                      type="tel" 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('phone')"
+                      formControlName="phone"
+                      placeholder="0612345678">
+                    <div class="invalid-feedback">{{ getFieldError('phone') }}</div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <h4 class="section-title">Adresse de livraison</h4>
-                
-                <div class="form-group">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-map-marker-alt me-2"></i>
+                  Adresse de livraison
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
                   <label class="form-label">Adresse complète *</label>
-                  <textarea class="form-control"
-                            [class.is-invalid]="isFieldInvalid('address')"
-                            formControlName="address"
-                            rows="3"
-                            placeholder="Numéro, rue, quartier, ville"></textarea>
+                  <textarea 
+                    class="form-control"
+                    [class.is-invalid]="isFieldInvalid('address')"
+                    formControlName="address"
+                    rows="3"
+                    placeholder="Numéro, rue, appartement..."></textarea>
                   <div class="invalid-feedback">{{ getFieldError('address') }}</div>
                 </div>
 
                 <div class="row">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="form-label">Ville *</label>
-                      <select class="form-control"
-                              [class.is-invalid]="isFieldInvalid('city')"
-                              formControlName="city">
-                        <option value="">Sélectionnez votre ville</option>
-                        <option value="Casablanca">Casablanca</option>
-                        <option value="Rabat">Rabat</option>
-                        <option value="Marrakech">Marrakech</option>
-                        <option value="Fès">Fès</option>
-                        <option value="Tanger">Tanger</option>
-                        <option value="Agadir">Agadir</option>
-                        <option value="Meknès">Meknès</option>
-                        <option value="Oujda">Oujda</option>
-                      </select>
-                      <div class="invalid-feedback">{{ getFieldError('city') }}</div>
-                    </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Ville *</label>
+                    <input 
+                      type="text" 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('city')"
+                      formControlName="city"
+                      placeholder="Casablanca">
+                    <div class="invalid-feedback">{{ getFieldError('city') }}</div>
                   </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="form-label">Code postal *</label>
-                      <input type="text" 
-                             class="form-control"
-                             [class.is-invalid]="isFieldInvalid('postalCode')"
-                             formControlName="postalCode"
-                             placeholder="20000">
-                      <div class="invalid-feedback">{{ getFieldError('postalCode') }}</div>
-                    </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Code postal *</label>
+                    <input 
+                      type="text" 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('postalCode')"
+                      formControlName="postalCode"
+                      placeholder="20000">
+                    <div class="invalid-feedback">{{ getFieldError('postalCode') }}</div>
                   </div>
-                </div>
-
-                <div class="form-options">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" formControlName="saveInfo">
-                    <label class="form-check-label">
-                      Sauvegarder ces informations pour mes prochaines commandes
-                    </label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" formControlName="newsletter">
-                    <label class="form-check-label">
-                      Je souhaite recevoir les offres et actualités par email
-                    </label>
-                  </div>
-                </div>
-
-                <div class="step-actions">
-                  <button type="button" class="btn btn-primary btn-lg" (click)="nextStep()">
-                    Continuer vers le paiement
-                    <i class="fas fa-arrow-right ms-2"></i>
-                  </button>
                 </div>
               </div>
             </div>
 
-            <!-- Step 2: Payment Method -->
-            <div class="checkout-step" *ngIf="currentStep === 2">
-              <div class="step-card">
-                <h3 class="step-title">
-                  <i class="fas fa-credit-card me-3"></i>
-                  Méthode de paiement
-                </h3>
+            <div class="d-flex justify-content-end">
+              <button type="button" class="btn btn-primary btn-lg" (click)="nextStep()">
+                Continuer
+                <i class="fas fa-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
 
-                <!-- Payment Methods Selection -->
+          <!-- Étape 2: Paiement -->
+          <div class="checkout-step" *ngIf="currentStep === 2">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-credit-card me-2"></i>
+                  Méthode de paiement
+                </h5>
+              </div>
+              <div class="card-body">
                 <div class="payment-methods">
-                  <div class="payment-method" 
-                       *ngFor="let method of paymentMethods"
-                       [class.selected]="selectedPaymentMethod === method.id"
-                       (click)="selectPaymentMethod(method.id)">
+                  <div 
+                    class="payment-method-card"
+                    *ngFor="let method of paymentMethods"
+                    [class.selected]="selectedPaymentMethod === method.id"
+                    (click)="selectPaymentMethod(method.id)">
                     <div class="method-icon">
                       <i [class]="method.icon"></i>
                     </div>
                     <div class="method-info">
-                      <h5>{{ method.name }}</h5>
-                      <p>{{ method.description }}</p>
-                    </div>
-                    <div class="method-radio">
-                      <input type="radio" 
-                             [checked]="selectedPaymentMethod === method.id"
-                             [value]="method.id">
+                      <input 
+                        type="radio" 
+                        [id]="'payment-' + method.id"
+                        name="paymentMethod"
+                        [value]="method.id"
+                        [checked]="selectedPaymentMethod === method.id">
+                      <label [for]="'payment-' + method.id">{{ method.name }}</label>
                     </div>
                   </div>
                 </div>
 
-                <!-- Card Payment Form -->
-                <div class="payment-form" *ngIf="selectedPaymentMethod === 'card'">
-                  <h4 class="section-title">Informations de carte</h4>
-                  
-                  <div class="form-group">
+                <!-- Formulaire carte bancaire -->
+                <div class="payment-form mt-4" *ngIf="selectedPaymentMethod === 'card'">
+                  <div class="mb-3">
                     <label class="form-label">Nom sur la carte *</label>
-                    <input type="text" 
-                           class="form-control"
-                           [class.is-invalid]="isFieldInvalid('cardName')"
-                           formControlName="cardName"
-                           placeholder="Nom comme sur la carte">
+                    <input 
+                      type="text" 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('cardName')"
+                      formControlName="cardName"
+                      placeholder="JEAN DUPONT">
                     <div class="invalid-feedback">{{ getFieldError('cardName') }}</div>
                   </div>
 
-                  <div class="form-group">
+                  <div class="mb-3">
                     <label class="form-label">Numéro de carte *</label>
-                    <input type="text" 
-                           class="form-control card-number"
-                           [class.is-invalid]="isFieldInvalid('cardNumber')"
-                           (input)="formatCardNumber($event)"
-                           placeholder="1234 5678 9012 3456"
-                           maxlength="19">
+                    <input 
+                      type="text" 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('cardNumber')"
+                      formControlName="cardNumber"
+                      (input)="formatCardNumber($event)"
+                      placeholder="1234 5678 9012 3456"
+                      maxlength="19">
                     <div class="invalid-feedback">{{ getFieldError('cardNumber') }}</div>
-                    <div class="card-icons">
-                      <i class="fab fa-cc-visa"></i>
-                      <i class="fab fa-cc-mastercard"></i>
-                      <i class="fab fa-cc-amex"></i>
-                    </div>
                   </div>
 
                   <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="form-label">Date d'expiration *</label>
-                        <input type="text" 
-                               class="form-control"
-                               [class.is-invalid]="isFieldInvalid('expiryDate')"
-                               (input)="formatExpiryDate($event)"
-                               placeholder="MM/YY"
-                               maxlength="5">
-                        <div class="invalid-feedback">{{ getFieldError('expiryDate') }}</div>
-                      </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Date d'expiration *</label>
+                      <input 
+                        type="text" 
+                        class="form-control"
+                        [class.is-invalid]="isFieldInvalid('expiryDate')"
+                        formControlName="expiryDate"
+                        (input)="formatExpiryDate($event)"
+                        placeholder="MM/AA"
+                        maxlength="5">
+                      <div class="invalid-feedback">{{ getFieldError('expiryDate') }}</div>
                     </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="form-label">CVV *</label>
-                        <input type="text" 
-                               class="form-control"
-                               [class.is-invalid]="isFieldInvalid('cvv')"
-                               formControlName="cvv"
-                               placeholder="123"
-                               maxlength="4">
-                        <div class="invalid-feedback">{{ getFieldError('cvv') }}</div>
-                      </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">CVV *</label>
+                      <input 
+                        type="text" 
+                        class="form-control"
+                        [class.is-invalid]="isFieldInvalid('cvv')"
+                        formControlName="cvv"
+                        placeholder="123"
+                        maxlength="3">
+                      <div class="invalid-feedback">{{ getFieldError('cvv') }}</div>
                     </div>
                   </div>
                 </div>
 
-                <!-- Other Payment Methods Info -->
-                <div class="payment-info" *ngIf="selectedPaymentMethod !== 'card'">
-                  <div class="info-card">
+                <!-- Info autres méthodes -->
+                <div class="payment-info mt-4" *ngIf="selectedPaymentMethod !== 'card'">
+                  <div class="alert alert-info">
                     <div *ngIf="selectedPaymentMethod === 'paypal'">
-                      <p>Vous serez redirigé vers PayPal pour finaliser le paiement de manière sécurisée.</p>
+                      <i class="fab fa-paypal me-2"></i>
+                      Vous serez redirigé vers PayPal pour finaliser votre paiement.
                     </div>
                     <div *ngIf="selectedPaymentMethod === 'bank'">
-                      <p>Les informations de virement bancaire vous seront envoyées par email après validation de votre commande.</p>
+                      <i class="fas fa-university me-2"></i>
+                      Les instructions pour le virement bancaire vous seront envoyées par email.
                     </div>
                     <div *ngIf="selectedPaymentMethod === 'cash'">
-                      <p>Vous pourrez payer en espèces lors de la livraison. Des frais supplémentaires de 20 MAD peuvent s'appliquer.</p>
+                      <i class="fas fa-money-bill-wave me-2"></i>
+                      Vous paierez en espèces lors de la livraison.
                     </div>
                   </div>
-                </div>
-
-                <div class="step-actions">
-                  <button type="button" class="btn btn-outline-secondary me-3" (click)="prevStep()">
-                    <i class="fas fa-arrow-left me-2"></i>
-                    Retour
-                  </button>
-                  <button type="button" class="btn btn-primary btn-lg" (click)="nextStep()">
-                    Continuer vers la confirmation
-                    <i class="fas fa-arrow-right ms-2"></i>
-                  </button>
                 </div>
               </div>
             </div>
 
-            <!-- Step 3: Order Confirmation -->
-            <div class="checkout-step" *ngIf="currentStep === 3">
-              <div class="step-card">
-                <h3 class="step-title">
-                  <i class="fas fa-check-circle me-3"></i>
-                  Confirmation de commande
-                </h3>
+            <div class="d-flex justify-content-between">
+              <button type="button" class="btn btn-outline-secondary me-3" (click)="prevStep()">
+                <i class="fas fa-arrow-left me-2"></i>
+                Retour
+              </button>
+              <button type="button" class="btn btn-primary btn-lg" (click)="nextStep()">
+                Continuer
+                <i class="fas fa-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
 
-                <!-- Order Summary -->
-                <div class="order-review">
-                  <h4 class="section-title">Récapitulatif de votre commande</h4>
-                  
-                  <div class="review-items">
-                    <div class="review-item" *ngFor="let item of cartItems$ | async">
-                      <div class="row align-items-center">
-                        <div class="col-2">
-                          <img [src]="item.product.image" [alt]="item.product.title" class="img-fluid">
-                        </div>
-                        <div class="col-6">
-                          <h6>{{ item.product.title }}</h6>
-                          <small class="text-muted">{{ item.product.category }}</small>
-                        </div>
-                        <div class="col-2 text-center">
-                          <span class="quantity">{{ item.quantity }}x</span>
-                        </div>
-                        <div class="col-2 text-end">
-                          <strong>{{ formatPrice(calculateItemTotal(item)) }}</strong>
-                        </div>
+          <!-- Étape 3: Confirmation -->
+          <div class="checkout-step" *ngIf="currentStep === 3">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-check-circle me-2"></i>
+                  Récapitulatif de la commande
+                </h5>
+              </div>
+              <div class="card-body">
+                <!-- Articles -->
+                <h6 class="mb-3">Articles commandés</h6>
+                <div class="order-items mb-4">
+                  <div class="order-item" *ngFor="let item of (cartItems$ | async)">
+                    <div class="item-image">
+                      <img 
+                        *ngIf="item.product.images && item.product.images.length > 0"
+                        [src]="item.product.images[0]" 
+                        [alt]="item.product.nom">
+                      <div 
+                        *ngIf="!item.product.images || item.product.images.length === 0"
+                        class="image-placeholder">
+                        <i class="fas fa-image"></i>
                       </div>
+                    </div>
+                    <div class="item-details">
+                      <h6>{{ item.product.nom }}</h6>
+                      <small class="text-muted">Quantité: {{ item.quantity }}</small>
+                    </div>
+                    <div class="item-price">
+                      <strong>{{ formatPrice(calculateItemTotal(item)) }}</strong>
                     </div>
                   </div>
                 </div>
 
-                <!-- Delivery & Payment Info -->
-                <div class="review-info">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <h5>Adresse de livraison</h5>
-                      <div class="address-block">
-                        <p>{{ checkoutForm.get('firstName')?.value }} {{ checkoutForm.get('lastName')?.value }}</p>
-                        <p>{{ checkoutForm.get('address')?.value }}</p>
-                        <p>{{ checkoutForm.get('city')?.value }}, {{ checkoutForm.get('postalCode')?.value }}</p>
-                        <p>{{ checkoutForm.get('phone')?.value }}</p>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <h5>Méthode de paiement</h5>
-                      <div class="payment-block">
-                        <div class="selected-payment">
-                          <i [class]="getSelectedPaymentIcon()"></i>
-                          <span>{{ getSelectedPaymentName() }}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <!-- Informations de livraison -->
+                <h6 class="mb-3">Adresse de livraison</h6>
+                <div class="info-box mb-4">
+                  <p class="mb-1">
+                    <strong>{{ checkoutForm.get('firstName')?.value }} {{ checkoutForm.get('lastName')?.value }}</strong>
+                  </p>
+                  <p class="mb-1">{{ checkoutForm.get('address')?.value }}</p>
+                  <p class="mb-1">{{ checkoutForm.get('postalCode')?.value }} {{ checkoutForm.get('city')?.value }}</p>
+                  <p class="mb-1">
+                    <i class="fas fa-phone me-2"></i>{{ checkoutForm.get('phone')?.value }}
+                  </p>
+                  <p class="mb-0">
+                    <i class="fas fa-envelope me-2"></i>{{ checkoutForm.get('email')?.value }}
+                  </p>
                 </div>
 
-                <!-- Terms & Conditions -->
-                <div class="terms-section">
-                  <div class="form-check">
-                    <input class="form-check-input" 
-                           type="checkbox" 
-                           [class.is-invalid]="isFieldInvalid('terms')"
-                           formControlName="terms">
-                    <label class="form-check-label">
-                      J'accepte les <a href="#" target="_blank">conditions générales de vente</a> 
-                      et la <a href="#" target="_blank">politique de confidentialité</a> *
-                    </label>
-                  </div>
+                <!-- Méthode de paiement -->
+                <h6 class="mb-3">Méthode de paiement</h6>
+                <div class="info-box mb-4">
+                  <p class="mb-0">
+                    <i [class]="getSelectedPaymentIcon() + ' me-2'"></i>
+                    <span>{{ getSelectedPaymentName() }}</span>
+                  </p>
+                </div>
+
+                <!-- Notes -->
+                <div class="mb-3">
+                  <label class="form-label">Notes (optionnel)</label>
+                  <textarea 
+                    class="form-control"
+                    formControlName="notes"
+                    rows="3"
+                    placeholder="Ajouter des instructions spéciales..."></textarea>
+                </div>
+
+                <!-- Conditions -->
+                <div class="form-check mb-3">
+                  <input 
+                    class="form-check-input"
+                    [class.is-invalid]="isFieldInvalid('terms')"
+                    type="checkbox"
+                    id="terms"
+                    formControlName="terms">
+                  <label class="form-check-label" for="terms">
+                    J'accepte les <a href="#" target="_blank">conditions générales de vente</a> *
+                  </label>
                   <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('terms')">
                     {{ getFieldError('terms') }}
                   </div>
                 </div>
-
-                <div class="step-actions">
-                  <button type="button" class="btn btn-outline-secondary me-3" (click)="prevStep()">
-                    <i class="fas fa-arrow-left me-2"></i>
-                    Retour
-                  </button>
-                  <button type="submit" 
-                          class="btn btn-success btn-lg"
-                          [disabled]="checkoutForm.invalid || isProcessingPayment">
-                    <span *ngIf="!isProcessingPayment">
-                      <i class="fas fa-credit-card me-2"></i>
-                      Finaliser la commande
-                    </span>
-                    <span *ngIf="isProcessingPayment">
-                      <i class="fas fa-spinner fa-spin me-2"></i>
-                      Traitement en cours...
-                    </span>
-                  </button>
-                </div>
               </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <button type="button" class="btn btn-outline-secondary me-3" (click)="prevStep()">
+                <i class="fas fa-arrow-left me-2"></i>
+                Retour
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-success btn-lg"
+                [disabled]="checkoutForm.invalid || isProcessingPayment">
+                <span *ngIf="!isProcessingPayment">
+                  <i class="fas fa-check me-2"></i>
+                  Confirmer la commande
+                </span>
+                <span *ngIf="isProcessingPayment">
+                  <i class="fas fa-spinner fa-spin me-2"></i>
+                  Traitement en cours...
+                </span>
+              </button>
             </div>
           </div>
 
-          <!-- Right Column - Order Summary -->
-          <div class="col-lg-4">
-            <div class="order-summary-sidebar">
-              <h4 class="summary-title">Résumé</h4>
-              
-              <!-- Cart Items Summary -->
-              <div class="summary-items">
-                <div class="summary-item" *ngFor="let item of cartItems$ | async">
-                  <div class="item-summary">
-                    <img [src]="item.product.image" [alt]="item.product.title">
-                    <div class="item-details">
-                      <h6>{{ item.product.title | slice:0:30 }}...</h6>
-                      <span class="quantity">Qty: {{ item.quantity }}</span>
+        </div>
+
+        <!-- Résumé de la commande (sidebar) -->
+        <div class="col-lg-4">
+          <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Résumé</h5>
+            </div>
+            <div class="card-body">
+              <!-- Articles du panier -->
+              <div class="cart-summary mb-3">
+                <div class="summary-item" *ngFor="let item of (cartItems$ | async)">
+                  <div class="d-flex align-items-center mb-2">
+                    <img 
+                      *ngIf="item.product.images && item.product.images.length > 0"
+                      [src]="item.product.images[0]" 
+                      [alt]="item.product.nom"
+                      class="summary-image me-2">
+                    <div 
+                      *ngIf="!item.product.images || item.product.images.length === 0"
+                      class="summary-image-placeholder me-2">
+                      <i class="fas fa-image"></i>
                     </div>
-                    <div class="item-price">
+                    <div class="flex-grow-1">
+                      <h6 class="mb-0 small">{{ item.product.nom | slice:0:30 }}...</h6>
+                      <small class="text-muted">Qté: {{ item.quantity }}</small>
+                    </div>
+                    <div>
                       {{ formatPrice(calculateItemTotal(item)) }}
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Price Breakdown -->
-              <div class="price-breakdown">
-                <div class="price-row">
-                  <span>Sous-total</span>
-                  <span>{{ (cartTotal$ | async) | number:'1.2-2' }} MAD</span>
-                </div>
-                <div class="price-row">
-                  <span>Livraison</span>
-                  <span class="text-success">Gratuite</span>
-                </div>
-                <div class="price-row">
-                  <span>TVA (20%)</span>
-                  <span>{{ ((cartTotal$ | async)! * 0.2) | number:'1.2-2' }} MAD</span>
-                </div>
-                <hr>
-                <div class="price-row total">
-                  <strong>Total</strong>
-                  <strong>{{ ((cartTotal$ | async)! * 1.2) | number:'1.2-2' }} MAD</strong>
-                </div>
+              <hr>
+
+              <!-- Calculs -->
+              <div class="d-flex justify-content-between mb-2">
+                <span>Sous-total:</span>
+                <span>{{ formatPrice((cartTotal$ | async) || 0) }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Livraison:</span>
+                <span class="text-success">Gratuite</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>TVA (20%):</span>
+                <span>{{ formatPrice(((cartTotal$ | async) || 0) * 0.2) }}</span>
+              </div>
+              
+              <hr>
+              
+              <div class="d-flex justify-content-between mb-3">
+                <strong class="fs-5">Total:</strong>
+                <strong class="text-primary fs-4">
+                  {{ formatPrice(((cartTotal$ | async) || 0) * 1.2) }}
+                </strong>
               </div>
 
-              <!-- Security Badge -->
-              <div class="security-badges">
-                <div class="security-item">
-                  <i class="fas fa-shield-alt"></i>
-                  <span>Paiement sécurisé SSL</span>
-                </div>
-                <div class="security-item">
-                  <i class="fas fa-truck"></i>
-                  <span>Livraison gratuite</span>
-                </div>
-                <div class="security-item">
-                  <i class="fas fa-undo"></i>
-                  <span>Retour sous 30 jours</span>
-                </div>
+              <div class="alert alert-info small mb-0">
+                <i class="fas fa-info-circle me-2"></i>
+                Votre commande sera traitée sous 24h
               </div>
             </div>
           </div>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
 </div>

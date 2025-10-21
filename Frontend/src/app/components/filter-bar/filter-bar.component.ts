@@ -1,5 +1,6 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Categorie } from '../../services/categorie.service';
 
 @Component({
   selector: 'app-filter-bar',
@@ -11,35 +12,18 @@ import { CommonModule } from '@angular/common';
         <div class="row align-items-center">
           <div class="col-md-6">
             <div class="filter-buttons">
-              <button 
-                class="filter-btn" 
-                [class.active]="selectedCategory === 'all'"
-                (click)="selectCategory('all')">
+              <button
+                class="filter-btn"
+                [class.active]="selectedCategoryId === null"
+                (click)="selectCategory(null)">
                 Tous
               </button>
-              <button 
-                class="filter-btn" 
-                [class.active]="selectedCategory === 'ciment'"
-                (click)="selectCategory('ciment')">
-                Ciment
-              </button>
-              <button 
-                class="filter-btn" 
-                [class.active]="selectedCategory === 'outils'"
-                (click)="selectCategory('outils')">
-                Outils
-              </button>
-              <button 
-                class="filter-btn" 
-                [class.active]="selectedCategory === 'isolation'"
-                (click)="selectCategory('isolation')">
-                Isolation
-              </button>
-              <button 
-                class="filter-btn" 
-                [class.active]="selectedCategory === 'plomberie'"
-                (click)="selectCategory('plomberie')">
-                Plomberie
+              <button
+                *ngFor="let category of categories"
+                class="filter-btn"
+                [class.active]="selectedCategoryId === category.id"
+                (click)="selectCategory(category.id)">
+                {{ category.nom }}
               </button>
             </div>
           </div>
@@ -49,7 +33,6 @@ import { CommonModule } from '@angular/common';
                 <option value="default">Trier par</option>
                 <option value="price-asc">Prix croissant</option>
                 <option value="price-desc">Prix décroissant</option>
-                <option value="rating">Mieux notés</option>
                 <option value="name">Nom A-Z</option>
               </select>
             </div>
@@ -111,7 +94,7 @@ import { CommonModule } from '@angular/common';
       .filter-buttons {
         margin-bottom: 1rem;
       }
-      
+
       .filter-btn {
         font-size: 0.9rem;
         padding: 0.5rem 1rem;
@@ -120,14 +103,15 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class FilterBarComponent {
-  @Output() categorySelected = new EventEmitter<string>();
+  @Input() categories: Categorie[] = [];
+  @Output() categorySelected = new EventEmitter<number | null>();
   @Output() sortChanged = new EventEmitter<string>();
-  
-  selectedCategory: string = 'all';
 
-  selectCategory(category: string): void {
-    this.selectedCategory = category;
-    this.categorySelected.emit(category);
+  selectedCategoryId: number | null = null;
+
+  selectCategory(categoryId: number | null): void {
+    this.selectedCategoryId = categoryId;
+    this.categorySelected.emit(categoryId);
   }
 
   onSortChange(event: Event): void {

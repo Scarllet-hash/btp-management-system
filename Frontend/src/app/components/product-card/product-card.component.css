@@ -114,21 +114,21 @@
   flex-grow: 1;
 }
 
-.product-rating {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-  gap: 0.5rem;
+.product-etat {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
-.stars {
-  color: #ffc107;
-  font-size: 0.9rem;
+.etat-neuf {
+  color: green;
 }
 
-.rating-text {
-  color: #666;
-  font-size: 0.8rem;
+.etat-bon {
+  color: orange;
+}
+
+.etat-mauvais {
+  color: red;
 }
 
 .product-footer {

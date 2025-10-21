@@ -1,46 +1,44 @@
 <div class="product-card h-100">
   <div class="product-image-container">
-    <img [src]="product.image" [alt]="product.title" class="product-image">
-    <div class="product-overlay">
-      <button 
-        class="btn btn-warning quick-view-btn"
-        title="Aperçu rapide">
-        <i class="fas fa-eye"></i>
-      </button>
+    <div *ngIf="product.images && product.images.length > 0" class="product-image">
+      <img [src]="product.images[0]" [alt]="product.nom" />
     </div>
-    <div class="product-badge" *ngIf="product.rating.rate >= 4">
-      <i class="fas fa-star"></i>
-      Populaire
+    <div *ngIf="!product.images || product.images.length === 0" class="product-image-placeholder">
+      <i class="fas fa-image"></i>
     </div>
   </div>
-  
+
   <div class="product-body">
-    <div class="product-category">
-      {{ product.category }}
-    </div>
-    
-    <h5 class="product-title" [title]="product.title">
-      {{ product.title.length > 50 ? (product.title.substring(0, 50) + '...') : product.title }}
+    <h5 class="product-title" [title]="product.nom">
+      {{ product.nom.length > 50 ? (product.nom.substring(0, 50) + '...') : product.nom }}
     </h5>
-    
+
     <p class="product-description">
       {{ product.description.length > 100 ? (product.description.substring(0, 100) + '...') : product.description }}
     </p>
-    
-    <div class="product-rating">
-      <div class="stars">
-        <i class="fas fa-star" *ngFor="let star of getStars(product.rating.rate)"></i>
-        <i class="far fa-star" *ngFor="let star of getEmptyStars(product.rating.rate)"></i>
-      </div>
-      <span class="rating-text">({{ product.rating.count }} avis)</span>
+
+    <div class="product-info">
+      <p class="info-item">
+        <strong>Quantité:</strong> {{ product.quantite }}
+      </p>
+      <p class="info-item">
+        <strong>État:</strong>
+        <span [ngClass]="{
+          'etat-neuf': product.etat === 'NEUF',
+          'etat-bon': product.etat === 'BON_ETAT',
+          'etat-mauvais': product.etat === 'MAUVAIS_ETAT'
+        }">
+          {{ product.etat }}
+        </span>
+      </p>
     </div>
-    
+
     <div class="product-footer">
       <div class="product-price">
-        {{ formatPrice(product.price) }}
+        {{ formatPrice(product.prix) }}
       </div>
-      
-      <button 
+
+      <button
         class="btn btn-success add-to-cart-btn"
         (click)="onAddToCart()"
         [disabled]="isLoading">

@@ -12,35 +12,19 @@ import { Product } from '../../models/product';
 export class ProductCardComponent {
   @Input() product!: Product;
   @Output() addToCart = new EventEmitter<Product>();
-  
-  // Add the missing isLoading property
+
   isLoading = false;
 
   onAddToCart(): void {
-    // Set loading state while adding to cart
     this.isLoading = true;
-    
-    // Emit the product
     this.addToCart.emit(this.product);
-    
-    // Reset loading state after a short delay (simulate API call)
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 1000);
-  }
-
-  getStars(rating: number): number[] {
-    return Array(Math.floor(rating)).fill(0);
-  }
-
-  getEmptyStars(rating: number): number[] {
-    return Array(5 - Math.floor(rating)).fill(0);
+    setTimeout(() => this.isLoading = false, 1000);
   }
 
   formatPrice(price: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'MAD'
     }).format(price);
   }
 }
