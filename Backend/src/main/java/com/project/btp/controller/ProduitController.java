@@ -234,12 +234,24 @@ public List<ProduitDTO> getAllProduits() {
 
     for (Produit p : produits) {
         ProduitDTO dto = new ProduitDTO();
+        dto.setId(p.getId());
         dto.setNom(p.getNom());
         dto.setDescription(p.getDescription());
         dto.setQuantite(p.getQuantite());
         dto.setPrix(p.getPrix());
         dto.setEtat(p.getEtat() != null ? p.getEtat().name() : null);
         dto.setCategorieId(p.getCategorie() != null ? p.getCategorie().getId() : null);
+        // dto.setCategorieNom(p.getCategorie() != null ? p.getCategorie().getNom() : null);
+        dto.setEntrepriseBtpId(p.getEntrepriseBTP() != null ? p.getEntrepriseBTP().getId() : null);
+        
+        // ✅ URLs complètes des images
+        if (p.getImages() != null && !p.getImages().isEmpty()) {
+            List<String> imageUrls = p.getImages().stream()
+                    .map(img -> "http://localhost:8080/api/uploads/produits/" + img.getFileName())
+                    .collect(Collectors.toList());
+            dto.setImages(imageUrls);
+        }
+        
         dtos.add(dto);
     }
 

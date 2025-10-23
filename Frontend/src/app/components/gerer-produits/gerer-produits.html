@@ -8,49 +8,49 @@
       </button>
     </div>
   </div>
-
+  
   <div class="filters-section">
     <div class="status-filters">
       <span class="status-label">STATUT:</span>
       <div class="filter-buttons">
-        <button 
-          class="filter-btn" 
+        <button
+          class="filter-btn"
           [class.active]="selectedStatus === 'tous'"
           (click)="filterByStatus('tous')">
           Tous
         </button>
-        <button 
-          class="filter-btn" 
+        <button
+          class="filter-btn"
           [class.active]="selectedStatus === 'attente'"
           (click)="filterByStatus('attente')">
           En attente de vérification
         </button>
-        <button 
-          class="filter-btn" 
+        <button
+          class="filter-btn"
           [class.active]="selectedStatus === 'pas-pret'"
           (click)="filterByStatus('pas-pret')">
           Pas prêt pour la vérification
         </button>
-        <button 
-          class="filter-btn" 
+        <button
+          class="filter-btn"
           [class.active]="selectedStatus === 'approuve'"
           (click)="filterByStatus('approuve')">
           Approuvé
         </button>
-        <button 
-          class="filter-btn" 
+        <button
+          class="filter-btn"
           [class.active]="selectedStatus === 'rejete'"
           (click)="filterByStatus('rejete')">
           Rejeté
         </button>
-        <button 
-          class="filter-btn" 
+        <button
+          class="filter-btn"
           [class.active]="selectedStatus === 'actif'"
           (click)="filterByStatus('actif')">
           Actif
         </button>
-        <button 
-          class="filter-btn" 
+        <button
+          class="filter-btn"
           [class.active]="selectedStatus === 'inactif'"
           (click)="filterByStatus('inactif')">
           Inactif
@@ -59,19 +59,27 @@
     </div>
   </div>
 
-  <div class="table-container">
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="loading-text">Chargement des produits...</p>
+  </div>
+
+  <div class="table-container" *ngIf="!isLoading">
     <table class="products-table">
       <thead>
         <tr>
+          <th>Image</th>
           <th>Nom</th>
           <th>Prix</th>
           <th>Prix de vente</th>
-          <th>Quantité 
+          <th>Quantité
             <i class="info-icon">ⓘ</i>
           </th>
-          <th>Date de création</th>
           <th>Visible</th>
-          <th>Actif</th>
+          <th>État</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -82,19 +90,67 @@
           </td>
         </tr>
         <tr *ngFor="let product of filteredProducts">
+          <td>
+            <div class="image-container">
+              <!-- Afficher l'image si elle existe -->
+              <div *ngIf="getImageCount(product) > 0">
+                <img 
+                  [src]="getProductImage(product, getCurrentImageIndex(product.id!))" 
+                  [alt]="product.nom"
+                  class="product-image"
+                />
+                
+                <!-- Flèches de navigation si plusieurs images -->
+                <div class="image-navigation" *ngIf="hasMultipleImages(product)">
+                  <button 
+                    class="nav-btn prev-btn" 
+                    (click)="previousImage(product, $event)"
+                    title="Image précédente">
+                    ◀
+                  </button>
+                  <span class="image-counter">
+                    {{ getCurrentImageIndex(product.id!) + 1 }} / {{ getImageCount(product) }}
+                  </span>
+                  <button 
+                    class="nav-btn next-btn" 
+                    (click)="nextImage(product, $event)"
+                    title="Image suivante">
+                    ▶
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Indicateur si aucune image -->
+              <div class="no-image-indicator" *ngIf="getImageCount(product) === 0">
+                📷 Pas d'image
+              </div>
+            </div>
+          </td>
           <td>{{ product.nom }}</td>
           <td>{{ product.prix | currency:'EUR':'symbol':'1.2-2' }}</td>
-          <td>{{ product.prixVente | currency:'EUR':'symbol':'1.2-2' }}</td>
-          <td>{{ product.quantite }}</td>
-          <td>{{ product.dateCreation }}</td>
+          <td>{{ product.prix * 1.2 | currency:'EUR':'symbol':'1.2-2' }}</td>
           <td>
-            <span class="status-badge" [class.visible]="product.visible" [class.invisible]="!product.visible">
-              {{ product.visible ? 'Visible' : 'Invisible' }}
+            <span [ngClass]="getStockStatus(product.quantite).class">
+              {{ product.quantite }}
             </span>
           </td>
           <td>
-            <span class="status-badge" [class.active]="product.actif" [class.inactive]="!product.actif">
-              {{ product.actif ? 'Actif' : 'Inactif' }}
+            <span 
+              *ngIf="product.quantite > 0" 
+              class="status-badge visible">
+              Visible
+            </span>
+            <span 
+              *ngIf="product.quantite === 0" 
+              class="status-badge invisible">
+              Invisible
+            </span>
+          </td>
+          <td>
+            <span 
+              class="etat-badge" 
+              [ngClass]="getEtatClass(product.etat)">
+              {{ getEtatLabel(product.etat) }}
             </span>
           </td>
           <td>
@@ -104,6 +160,9 @@
               </button>
               <button class="action-btn view-btn" (click)="viewProduct(product)" title="Voir">
                 👁️
+              </button>
+              <button class="action-btn delete-btn" (click)="deleteProduct(product)" title="Supprimer">
+                🗑️
               </button>
             </div>
           </td>

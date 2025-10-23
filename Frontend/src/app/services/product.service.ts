@@ -21,13 +21,38 @@ export class ProductService {
   constructor(private http: HttpClient) {
     this.loadCartFromStorage();
   }
-  getEtats() {
-  return this.http.get<string[]>('http://localhost:8080/api/produits/etats');
-}
 
-  getAllProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiUrl}/produits`); // ✅ Changé de /products à /produits
+  // ✅ Récupérer les états disponibles
+  getEtats(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/produits/etats`);
   }
+
+  // ✅ Récupérer tous les produits
+  getAllProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.apiUrl}/produits`);
+  }
+
+  // ✅ Récupérer un produit par ID
+  getProductById(id: number): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrl}/produits/${id}`);
+  }
+
+  // ✅ Créer un produit (avec FormData pour les images)
+  createProduct(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/produits`, formData);
+  }
+
+  // ✅ Mettre à jour un produit
+  updateProduct(id: number, product: Product): Observable<Product> {
+    return this.http.put<Product>(`${this.apiUrl}/produits/${id}`, product);
+  }
+
+  // ✅ Supprimer un produit
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/produits/${id}`);
+  }
+
+  // === GESTION DU PANIER ===
 
   addToCart(product: Product): void {
     const currentCart = this.cartItems.value;
