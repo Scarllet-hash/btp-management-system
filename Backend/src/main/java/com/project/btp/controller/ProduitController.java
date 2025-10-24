@@ -3,6 +3,7 @@ package com.project.btp.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.btp.DTO.ProduitDTO;
 // import com.project.btp.DTO.ProduitResponseDTO;
+import java.util.Optional;
 import com.project.btp.model.Categorie;
 import com.project.btp.model.EntrepriseBTP;
 // import com.project.btp.model.EntrepriseBTP;
@@ -62,13 +63,42 @@ public class ProduitController {
 
   
 
-    @GetMapping("/{id:[0-9]+}")
-    public ResponseEntity<Produit> getProduit(@PathVariable Long id) {
-        return produitService.getProduitById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+  // Remplacez la méthode getProduit() dans votre ProduitController par celle-ci :
 
+@GetMapping("/{id:[0-9]+}")
+public ResponseEntity<ProduitDTO> getProduit(@PathVariable Long id) {
+    Optional<Produit> produitOpt = produitService.getProduitById(id);
+    
+    if (produitOpt.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+    
+    Produit p = produitOpt.get();
+    
+    // Convertir en DTO
+    ProduitDTO dto = new ProduitDTO();
+    dto.setId(p.getId());
+    dto.setNom(p.getNom());
+    dto.setDescription(p.getDescription());
+    dto.setQuantite(p.getQuantite());
+    dto.setPrix(p.getPrix());
+    dto.setEtat(p.getEtat() != null ? p.getEtat().name() : null);
+    dto.setCategorieId(p.getCategorie() != null ? p.getCategorie().getId() : null);
+    dto.setEntrepriseBtpId(p.getEntrepriseBTP() != null ? p.getEntrepriseBTP().getId() : null);
+    
+    // ✅ Construire les URLs complètes des images
+    if (p.getImages() != null && !p.getImages().isEmpty()) {
+        List<String> imageUrls = p.getImages().stream()
+                .map(img -> "http://localhost:8080/api/uploads/produits/" + img.getFileName())
+                .collect(Collectors.toList());
+        dto.setImages(imageUrls);
+    }
+    
+    System.out.println("✅ Produit " + id + " converti en DTO avec " + 
+                       (dto.getImages() != null ? dto.getImages().size() : 0) + " images");
+    
+    return ResponseEntity.ok(dto);
+}
     /**
      * 🔧 ENDPOINT CORRIGÉ - Retourne un DTO simple au lieu de l'entité complète
      */
@@ -216,11 +246,6 @@ public class ProduitController {
         }
     }
 
-    @PutMapping("/{id:[0-9]+}")
-    public ResponseEntity<Produit> updateProduit(@PathVariable Long id, @RequestBody Produit produit) {
-        Produit updated = produitService.updateProduit(id, produit);
-        return ResponseEntity.ok(updated);
-    }
 
     @DeleteMapping("/{id:[0-9]+}")
     public ResponseEntity<Void> deleteProduit(@PathVariable Long id) {
@@ -257,6 +282,174 @@ public List<ProduitDTO> getAllProduits() {
 
     return dtos;
 }
+@PutMapping(value = "/{id:[0-9]+}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<?> updateProduit(
+        @PathVariable Long id,
+        @RequestPart("produit") String produitJson,
+        @RequestPart(value = "images", required = false) MultipartFile[] newImages,
+        @RequestPart(value = "existingImages", required = false) String existingImagesJson) {
 
+    try {
+        System.out.println("🛠 Mise à jour du produit ID: " + id);
+        System.out.println("📦 Produit JSON: " + produitJson);
+        System.out.println("📸 Nouvelles images: " + (newImages != null ? newImages.length : 0));
+        System.out.println("🖼️ Images existantes JSON: " + existingImagesJson);
+
+        // Vérifier si le produit existe
+        Produit existingProduit = produitRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produit non trouvé avec ID: " + id));
+
+        // Convertir le JSON en DTO
+        ObjectMapper mapper = new ObjectMapper();
+        ProduitDTO produitDTO = mapper.readValue(produitJson, ProduitDTO.class);
+
+        // 🔄 Mettre à jour les champs de base
+        existingProduit.setNom(produitDTO.getNom());
+        existingProduit.setDescription(produitDTO.getDescription());
+        existingProduit.setPrix(produitDTO.getPrix());
+        existingProduit.setQuantite(produitDTO.getQuantite());
+
+        // 🔄 Mettre à jour l'état
+        if (produitDTO.getEtat() != null) {
+            existingProduit.setEtat(EtatProduit.valueOf(produitDTO.getEtat()));
+        }
+
+        // 🔄 Mettre à jour la catégorie
+        if (produitDTO.getCategorieId() != null) {
+            Categorie categorie = categorieRepository.findById(produitDTO.getCategorieId())
+                    .orElseThrow(() -> new RuntimeException("Catégorie non trouvée"));
+            existingProduit.setCategorie(categorie);
+        }
+
+        // 🔄 Mettre à jour l'entreprise (si précisée)
+        if (produitDTO.getEntrepriseBtpId() != null) {
+            EntrepriseBTP entreprise = entrepriseBTPRepository.findById(produitDTO.getEntrepriseBtpId())
+                    .orElseThrow(() -> new RuntimeException("Entreprise non trouvée"));
+            existingProduit.setEntrepriseBTP(entreprise);
+        }
+
+        // 📸 GESTION AMÉLIORÉE DES IMAGES
+        List<ProduitImage> finalImages = new ArrayList<>();
+        
+        // 1️⃣ RÉCUPÉRER LES IMAGES EXISTANTES À CONSERVER
+        if (existingImagesJson != null && !existingImagesJson.isEmpty()) {
+            System.out.println("🔍 Traitement des images existantes à conserver...");
+            
+            // Parser le JSON des URLs existantes
+            String[] existingUrls = mapper.readValue(existingImagesJson, String[].class);
+            System.out.println("✅ Nombre d'images existantes à conserver: " + existingUrls.length);
+            
+            // Pour chaque URL existante, trouver le ProduitImage correspondant
+            for (String url : existingUrls) {
+                // Extraire le nom du fichier de l'URL
+                // Format attendu: http://localhost:8080/api/uploads/produits/filename.jpg
+                String filename = url.substring(url.lastIndexOf("/") + 1);
+                System.out.println("🔎 Recherche de l'image: " + filename);
+                
+                // Chercher cette image dans les images actuelles du produit
+                Optional<ProduitImage> existingImage = existingProduit.getImages().stream()
+                        .filter(img -> img.getFileName().equals(filename))
+                        .findFirst();
+                
+                if (existingImage.isPresent()) {
+                    finalImages.add(existingImage.get());
+                    System.out.println("✅ Image conservée: " + filename);
+                } else {
+                    System.out.println("⚠️ Image non trouvée dans la BD: " + filename);
+                }
+            }
+        }
+
+        // 2️⃣ AJOUTER LES NOUVELLES IMAGES
+        if (newImages != null && newImages.length > 0) {
+            System.out.println("📸 Traitement de " + newImages.length + " nouvelles images");
+
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            for (MultipartFile file : newImages) {
+                if (file.isEmpty()) {
+                    System.out.println("⚠️ Fichier vide ignoré");
+                    continue;
+                }
+
+                // Générer un nom unique
+                String originalFilename = file.getOriginalFilename();
+                String extension = originalFilename != null && originalFilename.contains(".")
+                        ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                        : "";
+                String filename = UUID.randomUUID().toString() + extension;
+
+                // Sauvegarder le fichier
+                Path filePath = uploadPath.resolve(filename);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Créer l'entité ProduitImage
+                ProduitImage image = new ProduitImage();
+                image.setFileName(filename);
+                image.setFileType(file.getContentType());
+                image.setData(file.getBytes());
+                image.setProduit(existingProduit);
+
+                finalImages.add(image);
+                System.out.println("✅ Nouvelle image ajoutée: " + filename);
+            }
+        }
+
+        // 3️⃣ SUPPRIMER LES IMAGES QUI NE SONT PLUS UTILISÉES
+        List<String> finalFilenames = finalImages.stream()
+                .map(ProduitImage::getFileName)
+                .collect(Collectors.toList());
+        
+        for (ProduitImage oldImage : existingProduit.getImages()) {
+            if (!finalFilenames.contains(oldImage.getFileName())) {
+                // Cette image a été supprimée, supprimer le fichier physique
+                try {
+                    Path fileToDelete = Paths.get(UPLOAD_DIR).resolve(oldImage.getFileName());
+                    Files.deleteIfExists(fileToDelete);
+                    System.out.println("🗑️ Fichier supprimé: " + oldImage.getFileName());
+                } catch (IOException e) {
+                    System.err.println("⚠️ Erreur suppression fichier: " + e.getMessage());
+                }
+            }
+        }
+
+        // 4️⃣ METTRE À JOUR LA LISTE DES IMAGES DU PRODUIT
+        existingProduit.getImages().clear();
+        existingProduit.getImages().addAll(finalImages);
+
+        System.out.println("📊 Total final d'images: " + finalImages.size());
+
+        // 💾 Sauvegarde
+        Produit updatedProduit = produitRepository.save(existingProduit);
+        System.out.println("✅✅✅ Produit mis à jour avec succès : " + updatedProduit.getNom());
+
+        // Préparer la réponse
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Produit mis à jour avec succès");
+        response.put("id", updatedProduit.getId());
+        response.put("nom", updatedProduit.getNom());
+        
+        // Ajouter les URLs des images dans la réponse
+        if (updatedProduit.getImages() != null && !updatedProduit.getImages().isEmpty()) {
+            List<String> imageUrls = updatedProduit.getImages().stream()
+                    .map(img -> "http://localhost:8080/api/uploads/produits/" + img.getFileName())
+                    .collect(Collectors.toList());
+            response.put("images", imageUrls);
+        }
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        System.err.println("❌ Erreur lors de la mise à jour du produit:");
+        e.printStackTrace();
+        return ResponseEntity.status(500).body(Map.of(
+                "error", "Erreur lors de la mise à jour du produit",
+                "message", e.getMessage()
+        ));
+    }
+}
 
 }

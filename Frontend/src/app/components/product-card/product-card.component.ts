@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Product } from '../../models/product';
 
 @Component({
@@ -13,12 +14,22 @@ export class ProductCardComponent {
   @Input() product!: Product;
   @Output() addToCart = new EventEmitter<Product>();
 
-  isLoading = false;
+  isAddingToCart: boolean = false;
 
-  onAddToCart(): void {
-    this.isLoading = true;
+  constructor(private router: Router) {}
+
+  viewDetails(): void {
+    this.router.navigate(['/products', this.product.id]);
+  }
+
+  onAddToCart(event: Event): void {
+    event.stopPropagation(); // Empêche la navigation vers les détails
+    this.isAddingToCart = true;
     this.addToCart.emit(this.product);
-    setTimeout(() => this.isLoading = false, 1000);
+    
+    setTimeout(() => {
+      this.isAddingToCart = false;
+    }, 1000);
   }
 
   formatPrice(price: number): string {

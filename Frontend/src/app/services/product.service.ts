@@ -36,15 +36,15 @@ export class ProductService {
   getProductById(id: number): Observable<Product> {
     return this.http.get<Product>(`${this.apiUrl}/produits/${id}`);
   }
+  
 
   // ✅ Créer un produit (avec FormData pour les images)
   createProduct(formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/produits`, formData);
   }
 
-  // ✅ Mettre à jour un produit
-  updateProduct(id: number, product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/produits/${id}`, product);
+updateProductFormData(id: number, formData: FormData): Observable<Product> {
+    return this.http.put<Product>(`${this.apiUrl}/produits/${id}`, formData);
   }
 
   // ✅ Supprimer un produit

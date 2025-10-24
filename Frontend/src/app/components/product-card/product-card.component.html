@@ -1,56 +1,41 @@
-<div class="product-card h-100">
-  <div class="product-image-container">
+<div class="product-card" (click)="viewDetails()">
+  <!-- Image du produit -->
+  <div class="product-image-wrapper">
     <div *ngIf="product.images && product.images.length > 0" class="product-image">
       <img [src]="product.images[0]" [alt]="product.nom" />
     </div>
     <div *ngIf="!product.images || product.images.length === 0" class="product-image-placeholder">
-      <i class="fas fa-image"></i>
+      <i class="fas fa-image fa-3x"></i>
+    </div>
+    
+    <!-- Badge si rupture de stock -->
+    <div *ngIf="product.quantite === 0" class="stock-badge-overlay">
+      Rupture de stock
     </div>
   </div>
 
-  <div class="product-body">
-    <h5 class="product-title" [title]="product.nom">
-      {{ product.nom.length > 50 ? (product.nom.substring(0, 50) + '...') : product.nom }}
+  <!-- Nom et prix du produit -->
+  <div class="product-info">
+    <h5 class="product-name" [title]="product.nom">
+      {{ product.nom }}
     </h5>
-
-    <p class="product-description">
-      {{ product.description.length > 100 ? (product.description.substring(0, 100) + '...') : product.description }}
+    <p class="product-price">
+      {{ formatPrice(product.prix) }}
     </p>
-
-    <div class="product-info">
-      <p class="info-item">
-        <strong>Quantité:</strong> {{ product.quantite }}
-      </p>
-      <p class="info-item">
-        <strong>État:</strong>
-        <span [ngClass]="{
-          'etat-neuf': product.etat === 'NEUF',
-          'etat-bon': product.etat === 'BON_ETAT',
-          'etat-mauvais': product.etat === 'MAUVAIS_ETAT'
-        }">
-          {{ product.etat }}
-        </span>
-      </p>
-    </div>
-
-    <div class="product-footer">
-      <div class="product-price">
-        {{ formatPrice(product.prix) }}
-      </div>
-
-      <button
-        class="btn btn-success add-to-cart-btn"
-        (click)="onAddToCart()"
-        [disabled]="isLoading">
-        <span *ngIf="!isLoading">
-          <i class="fas fa-cart-plus me-2"></i>
-          Ajouter
-        </span>
-        <span *ngIf="isLoading">
-          <i class="fas fa-spinner fa-spin me-2"></i>
-          Ajout...
-        </span>
-      </button>
-    </div>
+    
+    <!-- Bouton ajouter au panier -->
+    <button 
+      class="btn btn-success btn-add-cart"
+      (click)="onAddToCart($event)"
+      [disabled]="isAddingToCart || product.quantite === 0">
+      <span *ngIf="!isAddingToCart">
+        <i class="fas fa-cart-plus me-2"></i>
+        Ajouter au panier
+      </span>
+      <span *ngIf="isAddingToCart">
+        <i class="fas fa-spinner fa-spin me-2"></i>
+        Ajout...
+      </span>
+    </button>
   </div>
 </div>

@@ -2,6 +2,7 @@
 package com.project.btp.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 @Entity
@@ -10,18 +11,21 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ProduitImage {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fileName; // nom du fichier stocké (ex: uuid.png)
-    private String fileType; // type mime (image/png, etc.)
+    private String fileName; // Nom du fichier stocké (ex: uuid.png)
+    private String fileType; // Type MIME (image/png, image/jpeg, etc.)
 
     @Lob
     @Column(columnDefinition = "LONGBLOB")
+    @JsonIgnore // ⚡ Empêche l'envoi du tableau binaire dans le JSON
     private byte[] data;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "produit_id")
+    @JsonIgnore // ⚡ Évite les références circulaires
     private Produit produit;
 }

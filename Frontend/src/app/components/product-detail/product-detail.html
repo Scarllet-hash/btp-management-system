@@ -1,0 +1,152 @@
+<div class="product-detail-container">
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p>Chargement du produit...</p>
+  </div>
+
+  <div *ngIf="!isLoading && product" class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a (click)="goBack()" style="cursor: pointer;">Produits</a>
+        </li>
+        <li class="breadcrumb-item active">{{ product.nom }}</li>
+      </ol>
+    </nav>
+
+    <div class="row">
+      <div class="col-lg-6 col-md-6 mb-4">
+        <div class="image-section">
+          <div class="main-image-container">
+            <img 
+              *ngIf="product.images && product.images.length > 0" 
+              [src]="getCurrentImage()" 
+              [alt]="product.nom"
+              class="main-image" />
+            
+            <div *ngIf="!product.images || product.images.length === 0" class="no-image">
+              <i class="fas fa-image fa-5x"></i>
+              <p>Aucune image disponible</p>
+            </div>
+
+            <button 
+              *ngIf="product.images && product.images.length > 1"
+              class="carousel-btn prev-btn" 
+              (click)="previousImage()">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <button 
+              *ngIf="product.images && product.images.length > 1"
+              class="carousel-btn next-btn" 
+              (click)="nextImage()">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <div *ngIf="product.images && product.images.length > 1" class="image-counter">
+              {{ currentImageIndex + 1 }} / {{ product.images.length }}
+            </div>
+          </div>
+
+          <div *ngIf="product.images && product.images.length > 1" class="thumbnails-container">
+            <div 
+              *ngFor="let image of product.images; let i = index"
+              class="thumbnail"
+              [class.active]="i === currentImageIndex"
+              (click)="selectImage(i)">
+              <img [src]="image" [alt]="product.nom + ' - Image ' + (i + 1)" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-6">
+        <div class="product-details">
+          <h1 class="product-name">{{ product.nom }}</h1>
+
+          <div class="price-section">
+            <span class="price">{{ formatPrice(product.prix) }}</span>
+          </div>
+
+          <div class="stock-section">
+            <span 
+              class="stock-badge"
+              [ngClass]="getStockStatus().class">
+              <i class="fas fa-circle me-2"></i>
+              {{ getStockStatus().label }}
+            </span>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="description-section">
+            <h3 class="section-title">Description</h3>
+            <p class="description-text">{{ product.description }}</p>
+          </div>
+
+          <div class="info-section">
+            <h3 class="section-title">Informations du produit</h3>
+            <ul class="info-list">
+              <li class="info-item">
+                <strong>État:</strong>
+                <span 
+                  class="etat-badge"
+                  [ngClass]="{
+                    'etat-neuf': product.etat === 'NEUF',
+                    'etat-bon': product.etat === 'BON_ETAT',
+                    'etat-mauvais': product.etat === 'MAUVAIS_ETAT'
+                  }">
+                  {{ getEtatLabel(product.etat) }}
+                </span>
+              </li>
+              <li class="info-item">
+                <strong>Quantité disponible:</strong>
+                <span>{{ product.quantite }} unité(s)</span>
+              </li>
+              <li class="info-item" *ngIf="product.id">
+                <strong>Référence:</strong>
+                <span>#{{ product.id }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="action-section">
+            <button 
+              class="btn btn-primary btn-lg add-to-cart-btn"
+              (click)="addToCart()"
+              [disabled]="isAddingToCart || product.quantite === 0">
+              <span *ngIf="!isAddingToCart">
+                <i class="fas fa-shopping-cart me-2"></i>
+                Ajouter au panier
+              </span>
+              <span *ngIf="isAddingToCart">
+                <i class="fas fa-spinner fa-spin me-2"></i>
+                Ajout en cours...
+              </span>
+            </button>
+
+            <button 
+              class="btn btn-outline-secondary btn-lg"
+              (click)="goBack()">
+              <i class="fas fa-arrow-left me-2"></i>
+              Retour aux produits
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !product" class="container py-5">
+    <div class="text-center">
+      <i class="fas fa-exclamation-triangle fa-5x text-warning mb-3"></i>
+      <h2>Produit non trouvé</h2>
+      <p class="text-muted">Le produit que vous recherchez n'existe pas ou n'est plus disponible.</p>
+      <button class="btn btn-primary" (click)="goBack()">
+        Retour aux produits
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,9 +1,8 @@
-// src/app/gerer-produits/gerer-produits.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
-import { Product } from '../../models/product';
+import { Product, EtatProduit } from '../../models/product';
 
 @Component({
   selector: 'app-gerer-produits',
@@ -15,12 +14,21 @@ import { Product } from '../../models/product';
 export class GererProduitsComponent implements OnInit {
   selectedStatus: string = 'tous';
   isLoading: boolean = false;
-  
+
   products: Product[] = [];
   filteredProducts: Product[] = [];
-  
-  // Gestion de la navigation des images
+
   currentImageIndex: { [key: number]: number } = {};
+
+  editingProductId: number | null = null;
+  editingProduct: Product | null = null;
+  etats: EtatProduit[] = ['NEUF', 'BON_ETAT', 'MAUVAIS_ETAT'];
+
+  // Pour la gestion des images
+  selectedImages: { [key: number]: (string | null)[] } = {};
+  imageFiles: { [key: number]: (File | null)[] } = {};
+  // NOUVEAU: Pour suivre quelles images existantes garder
+  existingImageUrls: { [key: number]: (string | null)[] } = {};
 
   constructor(private productService: ProductService) {}
 
@@ -34,17 +42,13 @@ export class GererProduitsComponent implements OnInit {
       next: (data: Product[]) => {
         this.products = data;
         this.filteredProducts = [...this.products];
-        // Initialiser les index d'images à 0 pour tous les produits
         this.products.forEach(product => {
-          if (product.id) {
-            this.currentImageIndex[product.id] = 0;
-          }
+          this.currentImageIndex[product.id] = 0;
         });
         this.isLoading = false;
-        console.log('✅ Produits chargés:', this.products);
       },
       error: (err) => {
-        console.error('❌ Erreur lors du chargement des produits:', err);
+        console.error(err);
         this.isLoading = false;
       }
     });
@@ -52,175 +56,209 @@ export class GererProduitsComponent implements OnInit {
 
   filterByStatus(status: string): void {
     this.selectedStatus = status;
-    
-    if (status === 'tous') {
-      this.filteredProducts = [...this.products];
-    } else {
-      switch (status) {
-        case 'actif':
-          this.filteredProducts = this.products.filter(p => 
-            p.etat === 'NEUF' || p.etat === 'BON_ETAT'
-          );
-          break;
-        case 'approuve':
-          this.filteredProducts = this.products.filter(p => 
-            p.etat === 'NEUF' && p.quantite > 0
-          );
-          break;
-        case 'attente':
-          this.filteredProducts = this.products.filter(p => 
-            p.quantite > 0 && p.quantite < 10
-          );
-          break;
-        case 'pas-pret':
-          this.filteredProducts = this.products.filter(p => 
-            p.etat === 'MAUVAIS_ETAT'
-          );
-          break;
-        default:
-          this.filteredProducts = [...this.products];
-      }
+    switch (status) {
+      case 'actif':
+        this.filteredProducts = this.products.filter(p => p.etat === 'NEUF' || p.etat === 'BON_ETAT');
+        break;
+      case 'approuve':
+        this.filteredProducts = this.products.filter(p => p.etat === 'NEUF' && p.quantite > 0);
+        break;
+      case 'attente':
+        this.filteredProducts = this.products.filter(p => p.quantite > 0 && p.quantite < 10);
+        break;
+      case 'pas-pret':
+        this.filteredProducts = this.products.filter(p => p.etat === 'MAUVAIS_ETAT');
+        break;
+      default:
+        this.filteredProducts = [...this.products];
     }
-    console.log(`Filtrage par ${status}: ${this.filteredProducts.length} produits`);
+  }
+
+  isEditing(product: Product): boolean {
+    return this.editingProductId === product.id;
   }
 
   editProduct(product: Product): void {
-    console.log('Modifier le produit:', product);
+    this.editingProductId = product.id;
+    this.editingProduct = { ...product };
+    
+    // Initialiser les tableaux pour 7 emplacements
+    this.selectedImages[product.id] = new Array(7).fill(null);
+    this.imageFiles[product.id] = new Array(7).fill(null);
+    this.existingImageUrls[product.id] = new Array(7).fill(null);
+    
+    // Charger les images existantes
+    if (product.images && product.images.length > 0) {
+      product.images.forEach((url, index) => {
+        if (index < 7) {
+          this.selectedImages[product.id][index] = url;
+          this.existingImageUrls[product.id][index] = url; // Stocker l'URL existante
+        }
+      });
+    }
   }
 
-  viewProduct(product: Product): void {
-    console.log('Voir le produit:', product);
+  cancelEdit(): void {
+    if (this.editingProductId) {
+      delete this.selectedImages[this.editingProductId];
+      delete this.imageFiles[this.editingProductId];
+      delete this.existingImageUrls[this.editingProductId];
+    }
+    this.editingProductId = null;
+    this.editingProduct = null;
+  }
+
+  onImageSelect(event: Event, index: number): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files[0] || !this.editingProductId) return;
+
+    const file = input.files[0];
+    
+    // Validation de la taille (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('La taille de l\'image ne doit pas dépasser 2 Mo');
+      return;
+    }
+
+    // Validation du type
+    if (!file.type.startsWith('image/')) {
+      alert('Le fichier doit être une image');
+      return;
+    }
+
+    // Stocker le fichier
+    this.imageFiles[this.editingProductId][index] = file;
+    // Marquer que cette position a une nouvelle image (pas une existante)
+    this.existingImageUrls[this.editingProductId][index] = null;
+
+    // Créer une preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (this.editingProductId) {
+        this.selectedImages[this.editingProductId][index] = e.target?.result as string;
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeImage(index: number): void {
+    if (!this.editingProductId) return;
+    this.selectedImages[this.editingProductId][index] = null;
+    this.imageFiles[this.editingProductId][index] = null;
+    this.existingImageUrls[this.editingProductId][index] = null;
+  }
+
+  getSelectedImage(productId: number, index: number): string | null {
+    return this.selectedImages[productId]?.[index] || null;
+  }
+
+  hasSelectedImage(productId: number, index: number): boolean {
+    return !!this.selectedImages[productId]?.[index];
+  }
+
+  saveProduct(): void {
+    if (!this.editingProduct) return;
+
+    this.isLoading = true;
+    const formData = new FormData();
+    
+    // Ajouter les données du produit
+    const productData = {
+      nom: this.editingProduct.nom,
+      description: this.editingProduct.description,
+      quantite: this.editingProduct.quantite,
+      prix: this.editingProduct.prix,
+      etat: this.editingProduct.etat
+    };
+    formData.append('produit', JSON.stringify(productData));
+
+    // NOUVEAU: Collecter les URLs des images existantes à conserver
+    const existingImagesToKeep: string[] = [];
+    if (this.existingImageUrls[this.editingProduct.id]) {
+      this.existingImageUrls[this.editingProduct.id].forEach((url) => {
+        if (url) {
+          existingImagesToKeep.push(url);
+        }
+      });
+    }
+    
+    // Envoyer la liste des images existantes à conserver
+    if (existingImagesToKeep.length > 0) {
+      formData.append('existingImages', JSON.stringify(existingImagesToKeep));
+    }
+
+    // Ajouter les nouvelles images
+    if (this.imageFiles[this.editingProduct.id]) {
+      this.imageFiles[this.editingProduct.id].forEach((file) => {
+        if (file) {
+          formData.append('images', file, file.name);
+        }
+      });
+    }
+
+    this.productService.updateProductFormData(this.editingProduct.id, formData).subscribe({
+      next: updated => {
+        console.log('Produit mis à jour:', updated);
+        this.loadProducts();
+        this.cancelEdit();
+        this.isLoading = false;
+      },
+      error: err => {
+        console.error('Erreur mise à jour:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
   deleteProduct(product: Product): void {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer le produit "${product.nom}" ?`)) {
-      this.isLoading = true;
-      this.productService.deleteProduct(product.id!).subscribe({
-        next: () => {
-          console.log('✅ Produit supprimé avec succès');
-          // Nettoyer l'index d'image du produit supprimé
-          if (product.id) {
-            delete this.currentImageIndex[product.id];
-          }
-          this.loadProducts();
-        },
-        error: (err) => {
-          console.error('❌ Erreur lors de la suppression du produit:', err);
-          alert('Erreur lors de la suppression du produit');
-          this.isLoading = false;
-        }
-      });
-    }
+    if (!confirm(`Supprimer "${product.nom}" ?`)) return;
+
+    this.isLoading = true;
+    this.productService.deleteProduct(product.id).subscribe({
+      next: () => {
+        delete this.currentImageIndex[product.id];
+        this.loadProducts();
+      },
+      error: err => {
+        console.error(err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  updateProduct(product: Product): void {
-    const newQuantite = prompt(`Modifier la quantité pour "${product.nom}":`, product.quantite.toString());
-    
-    if (newQuantite !== null && !isNaN(Number(newQuantite))) {
-      const updatedProduct: Product = {
-        ...product,
-        quantite: Number(newQuantite)
-      };
-      
-      this.isLoading = true;
-      this.productService.updateProduct(product.id!, updatedProduct).subscribe({
-        next: (updated) => {
-          console.log('✅ Produit mis à jour avec succès', updated);
-          this.loadProducts();
-        },
-        error: (err) => {
-          console.error('❌ Erreur lors de la mise à jour du produit:', err);
-          alert('Erreur lors de la mise à jour du produit');
-          this.isLoading = false;
-        }
-      });
-    }
-  }
-
-  getEtatLabel(etat: string): string {
-    const etatLabels: { [key: string]: string } = {
-      'NEUF': 'Neuf',
-      'BON_ETAT': 'Bon état',
-      'USE': 'Usé',
-      'MAUVAIS_ETAT': 'Mauvais état',
-      'HORS_SERVICE': 'Hors service'
+  getEtatLabel(etat: EtatProduit): string {
+    const labels: { [key in EtatProduit]: string } = {
+      NEUF: 'Neuf',
+      BON_ETAT: 'Bon état',
+      MAUVAIS_ETAT: 'Mauvais état'
     };
-    return etatLabels[etat] || etat;
+    return labels[etat] || etat;
   }
 
-  getEtatClass(etat: string): string {
-    const etatClasses: { [key: string]: string } = {
-      'NEUF': 'status-neuf',
-      'BON_ETAT': 'status-bon',
-      'USE': 'status-use',
-      'MAUVAIS_ETAT': 'status-mauvais',
-      'HORS_SERVICE': 'status-hors-service'
+  getEtatClass(etat: EtatProduit): string {
+    const classes: { [key in EtatProduit]: string } = {
+      NEUF: 'status-neuf',
+      BON_ETAT: 'status-bon',
+      MAUVAIS_ETAT: 'status-mauvais'
     };
-    return etatClasses[etat] || '';
+    return classes[etat] || '';
   }
 
-  getStockStatus(quantite: number): { label: string, class: string } {
-    if (quantite === 0) {
-      return { label: 'Rupture', class: 'stock-rupture' };
-    } else if (quantite < 10) {
-      return { label: 'Stock faible', class: 'stock-faible' };
-    } else {
-      return { label: 'En stock', class: 'stock-ok' };
-    }
-  }
-
-  // Méthodes pour la gestion des images
-  getProductImage(product: Product, index: number = 0): string {
-    // Vérifier que le produit a des images
-    if (!product.images || product.images.length === 0) {
-      return ''; // Ou retourner une image par défaut
-    }
-    
-    // S'assurer que l'index est valide
-    const validIndex = Math.max(0, Math.min(index, product.images.length - 1));
-    
-    // Retourner l'image à l'index valide
-    return product.images[validIndex] || '';
+  getStockStatus(quantite: number): { label: string; class: string } {
+    if (quantite === 0) return { label: 'Rupture', class: 'stock-rupture' };
+    if (quantite < 10) return { label: 'Stock faible', class: 'stock-faible' };
+    return { label: 'En stock', class: 'stock-ok' };
   }
 
   getCurrentImageIndex(productId: number): number {
-    // Vérifier si l'index existe, sinon initialiser à 0
-    if (this.currentImageIndex[productId] === undefined) {
-      this.currentImageIndex[productId] = 0;
-    }
+    if (this.currentImageIndex[productId] === undefined) this.currentImageIndex[productId] = 0;
     return this.currentImageIndex[productId];
   }
 
-  nextImage(product: Product, event: Event): void {
-    event.stopPropagation();
-    event.preventDefault(); // Empêcher tout comportement par défaut
-    
-    if (!product.id || !product.images || product.images.length <= 1) {
-      return;
-    }
-    
-    const currentIndex = this.getCurrentImageIndex(product.id);
-    const nextIndex = (currentIndex + 1) % product.images.length;
-    
-    this.currentImageIndex[product.id] = nextIndex;
-    
-    console.log(`Produit ${product.id}: Image ${currentIndex} -> ${nextIndex}`);
-  }
-
-  previousImage(product: Product, event: Event): void {
-    event.stopPropagation();
-    event.preventDefault(); // Empêcher tout comportement par défaut
-    
-    if (!product.id || !product.images || product.images.length <= 1) {
-      return;
-    }
-    
-    const currentIndex = this.getCurrentImageIndex(product.id);
-    const prevIndex = currentIndex === 0 ? product.images.length - 1 : currentIndex - 1;
-    
-    this.currentImageIndex[product.id] = prevIndex;
-    
-    console.log(`Produit ${product.id}: Image ${currentIndex} -> ${prevIndex}`);
+  getProductImage(product: Product, index: number = 0): string {
+    if (!product.images || product.images.length === 0) return '';
+    const validIndex = Math.max(0, Math.min(index, product.images.length - 1));
+    return product.images[validIndex];
   }
 
   hasMultipleImages(product: Product): boolean {
@@ -229,5 +267,21 @@ export class GererProduitsComponent implements OnInit {
 
   getImageCount(product: Product): number {
     return product.images ? product.images.length : 0;
+  }
+
+  nextImage(product: Product, event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+    if (!product.id || !product.images || product.images.length <= 1) return;
+    const current = this.getCurrentImageIndex(product.id);
+    this.currentImageIndex[product.id] = (current + 1) % product.images.length;
+  }
+
+  previousImage(product: Product, event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+    if (!product.id || !product.images || product.images.length <= 1) return;
+    const current = this.getCurrentImageIndex(product.id);
+    this.currentImageIndex[product.id] = current === 0 ? product.images.length - 1 : current - 1;
   }
 }

@@ -14,6 +14,8 @@ import { CartComponent } from './components/cart/cart.component';
 import { CheckoutComponent } from './components/checkout/checkout.component';
 import { OrderConfirmationComponent } from './components/order-confirmation/order-confirmation.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
+import { ProductDetailComponent } from './components/product-detail/product-detail';
+
 
 export const routes: Routes = [
   // Route par défaut - Page d'accueil avec liste des produits
@@ -22,12 +24,13 @@ export const routes: Routes = [
     component: ProductListComponent,
     pathMatch: 'full'
   },
-  
+  { path: 'products/:id', component: ProductDetailComponent },
   // Routes e-commerce client
   {
     path: 'products',
     component: ProductListComponent
   },
+  
   {
     path: 'auth-modal',
     component: AuthModalComponent
