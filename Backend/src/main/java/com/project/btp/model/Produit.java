@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 @Data
 @NoArgsConstructor
@@ -26,15 +26,15 @@ public class Produit {
 
     @ManyToOne
     @JoinColumn(name = "entreprise_btp_id")
-    @JsonIgnore
+    @JsonBackReference
     private EntrepriseBTP entrepriseBTP;
 
     @ManyToOne
     @JoinColumn(name = "categorie_id")
-    @JsonManagedReference // ← Ajouter ici
-    @JsonIgnore
+    @JsonBackReference
     private Categorie categorie;
     @OneToMany(mappedBy = "produit", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonManagedReference
     private List<ProduitImage> images = new ArrayList<>();
 }

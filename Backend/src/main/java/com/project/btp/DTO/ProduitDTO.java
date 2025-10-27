@@ -1,4 +1,4 @@
-package com.project.btp.DTO;
+package com.project.btp.dto;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

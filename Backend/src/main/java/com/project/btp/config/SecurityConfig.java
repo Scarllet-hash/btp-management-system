@@ -22,7 +22,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Désactive CSRF pour Angular/Postman
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**", "/categories/**", "/produits/**" , "/api/**","/uploads/**").permitAll()
+            .requestMatchers("/auth/**", "/categories/**", "/produits/**" ,"/actuator/**", "/api/**","/uploads/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())

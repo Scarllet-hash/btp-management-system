@@ -1,7 +1,7 @@
 package com.project.btp.controller;
 
-import com.project.btp.DTO.LoginRequest;
-import com.project.btp.DTO.RegisterRequest;
+import com.project.btp.dto.LoginRequest;
+import com.project.btp.dto.RegisterRequest;
 import com.project.btp.model.*;
 import com.project.btp.repository.*;
 

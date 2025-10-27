@@ -1,4 +1,4 @@
-package com.project.btp.DTO;
+package com.project.btp.dto;
 import java.util.List;
 import lombok.Data;
 import lombok.AllArgsConstructor;
