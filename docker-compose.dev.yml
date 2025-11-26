@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+
+  # ------------------------
+  # MariaDB
+  # ------------------------
+  db:
+    image: mariadb:10.11
+    container_name: btp_db_container
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ""         # root sans mot de passe pour dev
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: btp_db
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  # ------------------------
+  # Backend Spring Boot
+  # ------------------------
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile.dev
+    container_name: btp_backend
+    working_dir: /app
+    volumes:
+      - ./Backend/src:/app/src
+      - ./Backend/pom.xml:/app/pom.xml
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/btp_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_PROFILES_ACTIVE: docker
+
+  # ------------------------
+  # Frontend Angular
+  # ------------------------
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile.dev
+    container_name: btp_frontend
+    working_dir: /app
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+
+volumes:
+  db_data:
