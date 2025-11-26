@@ -65,8 +65,8 @@ ngOnInit() {
     }
   );
   
-  // Chargement des états - NOUVELLE URL
-  this.http.get<string[]>('http://localhost:8080/api/produits/etats').subscribe(
+  // Chargement des états via proxy Angular
+  this.http.get<string[]>('/api/produits/etats').subscribe(
     (etats: string[]) => {
       this.etats = etats.map(e => ({
         value: e,
@@ -173,7 +173,7 @@ onSubmit() {
   // 🔄 Afficher un indicateur de chargement (optionnel)
   console.log('📤 Envoi du produit en cours...');
 
-  this.http.post('http://localhost:8080/api/produits', formData).subscribe({
+  this.http.post('/api/produits', formData).subscribe({
     next: (response: any) => {
       // ✅ Succès
       console.log('✅ Produit ajouté avec succès !', response);

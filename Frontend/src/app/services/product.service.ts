@@ -13,7 +13,7 @@ export interface CartItem {
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'http://localhost:8080/api'; // ✅ URL de base
+  private apiUrl = '/api'; // utilise le proxy Angular pour router vers le backend
   
   private cartItems = new BehaviorSubject<CartItem[]>([]);
   public cart$ = this.cartItems.asObservable();
@@ -43,7 +43,7 @@ export class ProductService {
     return this.http.post(`${this.apiUrl}/produits`, formData);
   }
 
-updateProductFormData(id: number, formData: FormData): Observable<Product> {
+  updateProductFormData(id: number, formData: FormData): Observable<Product> {
     return this.http.put<Product>(`${this.apiUrl}/produits/${id}`, formData);
   }
 

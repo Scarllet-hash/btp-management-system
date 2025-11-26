@@ -6,12 +6,12 @@ export class ProduitService {
   constructor(private http: HttpClient) {}
 
   getCategories() {
-    return this.http.get<any[]>('http://localhost:8080/api/categories');
+    return this.http.get<any[]>('/api/categories');
   }
   getEtats() {
-    return this.http.get<string[]>('http://localhost:8080/api/produits/etats');
+    return this.http.get<string[]>('/api/produits/etats');
   }
   ajouterProduit(formData: FormData) {
-    return this.http.post('http://localhost:8080/api/produits', formData);
+    return this.http.post('/api/produits', formData);
   }
 }

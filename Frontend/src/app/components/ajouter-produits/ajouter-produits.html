@@ -101,7 +101,10 @@
 
         <div class="form-group">
           <label for="categorie">Catégorie <span class="required">*</span></label>
-         <select id="categorie" [(ngModel)]="product.categorie" class="form-select">
+          <select id="categorie" 
+        [(ngModel)]="product.categorie" 
+        (ngModelChange)="onCategoryChange()"
+        class="form-select">
   <option value="">Catégorie</option>
   <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
 </select>

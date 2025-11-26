@@ -1,50 +1,51 @@
-## BTP Project
+## Projet BTP
 
-Full-stack construction management application composed of a Spring Boot backend (`Backend/`) and an Angular 20 frontend (`Frontend/`). The backend exposes secured REST APIs backed by MySQL, while the frontend consumes those APIs via an Angular dev server proxy for local development. Repository mirror: [Scarllet-hash/btp-management-system](https://github.com/Scarllet-hash/btp-management-system.git).
+Application full-stack de gestion pour le BTP composée d’un backend Spring Boot (`Backend/`) et d’un frontend Angular 20 (`Frontend/`). Le backend expose des APIs REST sécurisées connectées à MySQL, tandis que le frontend consomme ces services via un serveur Angular configuré avec un proxy (`proxy.conf.json`). Dépôt distant : [Scarllet-hash/btp-management-system](https://github.com/Scarllet-hash/btp-management-system.git).
 
-### Prerequisites
-- Java 21 (matching the backend `pom.xml`)
-- Maven 3.9+ (or the bundled `mvnw`/`mvnw.cmd`)
-- Node.js 20+ and npm 10+
-- MySQL 8.x accessible locally (default `localhost:3307`)
+### Pré-requis
+- Java 21 (aligné sur `pom.xml`)
+- Maven 3.9+ ou les wrappers `mvnw` / `mvnw.cmd`
+- Node.js 20+ avec npm 10+
+- MySQL 8.x accessible en local (par défaut `localhost:3307`)
 
 ### Backend (Spring Boot)
 1. `cd Backend`
-2. Install dependencies: `mvnw.cmd clean install` (Windows) or `./mvnw clean install` (Mac/Linux)
-3. Configure environment (override defaults only if needed):
-   - `SPRING_DATASOURCE_URL` (defaults to `jdbc:mysql://localhost:3307/gestion_btp?...`)
+2. Installation des dépendances : `mvnw.cmd clean install` (Windows) ou `./mvnw clean install` (macOS/Linux)
+3. Variables d’environnement disponibles (optionnelles) :
+   - `SPRING_DATASOURCE_URL` (défaut `jdbc:mysql://localhost:3307/gestion_btp?...`)
    - `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD`
-   - `SPRING_STATIC_LOCATION` if `uploads/` is stored elsewhere
-4. Launch API: `mvnw.cmd spring-boot:run`
-5. API is served at `http://localhost:8080/api`, file uploads available under `/uploads/**`.
+   - `SPRING_STATIC_LOCATION` pour pointer vers un autre dossier `uploads/`
+4. Lancer l’API : `mvnw.cmd spring-boot:run`
+5. L’API répond sur `http://localhost:8080/api`, les médias uploadés sur `/uploads/**`.
 
 ### Frontend (Angular 20)
 1. `cd Frontend`
-2. Install dependencies (once): `npm install`
-3. Start the dev server (no SSR): `npm run dev:no-ssr`
-4. Open `http://localhost:4200/`. The Angular proxy (`proxy.conf.json`) forwards `/api` calls to the backend so CORS configuration is not required locally.
+2. Installer les dépendances (première fois uniquement) : `npm install`
+3. Démarrer le serveur de dev (sans SSR) : `npm run dev:no-ssr`
+4. Ouvrir `http://localhost:4200/`. Le proxy Angular redirige automatiquement les appels `/api` vers `http://localhost:8080/api`, évitant les soucis de CORS.
 
-Additional scripts:
-- `npm run start` – serves with proxy on all interfaces (`0.0.0.0`)
-- `npm run build` / `npm run build:no-ssr` – production or static builds
-- `npm run test` – executes Karma unit tests
+Scripts utiles :
+- `npm run start` : serveur accessible sur toutes les interfaces (`0.0.0.0`)
+- `npm run build` / `npm run build:no-ssr` : builds production ou statiques
+- `npm run test` : tests unitaires Karma
 
-### Combined workflow
-1. Start MySQL, ensure schema `gestion_btp` exists (it will be auto-created if permissions allow).
-2. Run backend (`mvnw spring-boot:run`).
-3. In a new terminal run the frontend dev server (`npm run dev:no-ssr`).
-4. Navigate to `http://localhost:4200` and authenticate. API calls reach `http://localhost:8080/api` transparently via the Angular proxy.
+### Flux de travail recommandé
+1. Lancer MySQL et s’assurer que le schéma `gestion_btp` existe (création automatique si droits suffisants).
+2. Démarrer le backend (`mvnw spring-boot:run`).
+3. Dans un second terminal, lancer le frontend (`npm run dev:no-ssr`).
+4. Naviguer sur `http://localhost:4200`, se connecter et utiliser l’application. Les requêtes sont routées vers `http://localhost:8080/api`.
 
-### Troubleshooting
-- `ENOENT package.json` when running npm scripts: ensure you are inside `Frontend/`.
-- DB connection failures: confirm the port (`3307` by default) and credentials match `application.properties` or exported env vars.
-- Static assets not loading: keep `Backend/uploads` in sync with `spring.resources.static-locations`.
+### Dépannage
+- Erreur `ENOENT package.json` : vérifier que la commande npm est lancée depuis le dossier `Frontend/`.
+- Échec de connexion MySQL : confirmer le port (3307 par défaut) et les identifiants (cf. `application.properties` ou variables d’environnement).
+- Fichiers statiques absents : vérifier que `Backend/uploads` correspond au chemin déclaré dans `spring.resources.static-locations`.
 
-### Deployment notes
-- For containerized workflows, see `docker-compose.dev.yml`, `Frontend/Dockerfile.dev`, and `Backend/Dockerfile.dev`.
-- Build artifacts land in `Frontend/dist/civil_rpoject` and can be served by Nginx (see `Frontend/nginx.conf`).
+### Notes de déploiement
+- Références conteneurs : `docker-compose.dev.yml`, `Frontend/Dockerfile.dev`, `Backend/Dockerfile.dev`.
+- Le build Angular est généré dans `Frontend/dist/civil_rpoject` et peut être servi via Nginx (voir `Frontend/nginx.conf`).
 
-### Git workflow
-1. Commit changes: `git add . && git commit -m "docs: add project readme"`
-2. Push to GitHub: `git push origin main` (requires access to [Scarllet-hash/btp-management-system](https://github.com/Scarllet-hash/btp-management-system.git)).
+### Workflow Git
+1. `git add .`
+2. `git commit -m "docs: mettre à jour le readme en français"`
+3. `git push origin main`
 
