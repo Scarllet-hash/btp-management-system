@@ -1,5 +1,6 @@
 package com.project.btp.controller;
 
+import com.project.btp.dto.ProduitDTO;
 import com.project.btp.model.Categorie;
 import com.project.btp.model.Produit;
 import com.project.btp.service.CategorieService;
@@ -22,7 +23,7 @@ public class CategorieController {
         return service.getAllCategories();
     }
      @GetMapping("/{id}/produits")
-    public List<Produit> getProduitsByCategorie(@PathVariable Long id) {
+    public List<ProduitDTO> getProduitsByCategorie(@PathVariable Long id) {
         return service.getProduitsByCategorie(id);
     }
 }
