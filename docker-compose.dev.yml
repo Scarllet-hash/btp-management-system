@@ -30,6 +30,7 @@ services:
     volumes:
       - ./Backend/src:/app/src
       - ./Backend/pom.xml:/app/pom.xml
+      - ./uploads:/app/uploads
     depends_on:
       - db
     ports:
