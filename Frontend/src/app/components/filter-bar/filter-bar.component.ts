@@ -104,10 +104,9 @@ import { Categorie } from '../../services/categorie.service';
 })
 export class FilterBarComponent {
   @Input() categories: Categorie[] = [];
+  @Input() selectedCategoryId: number | null = null;
   @Output() categorySelected = new EventEmitter<number | null>();
   @Output() sortChanged = new EventEmitter<string>();
-
-  selectedCategoryId: number | null = null;
 
   selectCategory(categoryId: number | null): void {
     this.selectedCategoryId = categoryId;

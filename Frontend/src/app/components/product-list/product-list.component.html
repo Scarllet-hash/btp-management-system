@@ -1,7 +1,8 @@
-<section class="products-section">
+<section id="products-section" class="products-section">
   <!-- Barre de filtres -->
   <app-filter-bar
     [categories]="categories"
+    [selectedCategoryId]="selectedCategoryId"
     (categorySelected)="onCategoryChange($event)"
     (sortChanged)="onSortChange($event)">
   </app-filter-bar>

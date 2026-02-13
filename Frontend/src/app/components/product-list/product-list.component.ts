@@ -27,21 +27,24 @@ export class ProductListComponent implements OnInit {
   ngOnInit(): void {
     this.loadCategories();
     this.loadAllProducts();
+    this.categorieService.selectedCategory$.subscribe((categoryId) => {
+      this.onCategoryChange(categoryId);
+    });
   }
 
-  // Récupère les catégories
+  // Recupere les categories
   loadCategories(): void {
     this.categorieService.getCategories().subscribe({
       next: (data: Categorie[]) => {
         this.categories = data;
       },
       error: (err) => {
-        console.error('Erreur lors du chargement des catégories', err);
+        console.error('Erreur lors du chargement des categories', err);
       }
     });
   }
 
-  // Récupère tous les produits
+  // Recupere tous les produits
   loadAllProducts(): void {
     this.isLoading = true;
     this.productService.getAllProducts().subscribe({
@@ -56,7 +59,7 @@ export class ProductListComponent implements OnInit {
     });
   }
 
-  // Récupère les produits par catégorie
+  // Recupere les produits par categorie
   loadProductsByCategory(categoryId: number): void {
     this.isLoading = true;
     this.categorieService.getProductsByCategory(categoryId).subscribe({
@@ -71,7 +74,7 @@ export class ProductListComponent implements OnInit {
     });
   }
 
-  // Appelé par FilterBarComponent
+  // Appele par FilterBarComponent/footer
   onCategoryChange(categoryId: number | null): void {
     this.selectedCategoryId = categoryId;
     if (categoryId === null) {
@@ -81,7 +84,7 @@ export class ProductListComponent implements OnInit {
     }
   }
 
-  // Appelé par FilterBarComponent
+  // Appele par FilterBarComponent
   onSortChange(sortType: string): void {
     this.sortProducts(sortType);
   }
@@ -106,11 +109,14 @@ export class ProductListComponent implements OnInit {
   // Ajoute au panier
   onAddToCart(product: Product): void {
     this.productService.addToCart(product);
-    console.log('Produit ajouté au panier:', product);
+    console.log('Produit ajoute au panier:', product);
   }
-getCategoryTitle(categoryId: number | null): string {
+
+  getCategoryTitle(categoryId: number | null): string {
     if (categoryId === null) return 'Tous nos produits';
-    
+
     const category = this.categories.find(c => c.id === categoryId);
-    return category?.nom || 'Catégorie inconnue';}
+    return category?.nom || 'Categorie inconnue';
   }
+
+}
