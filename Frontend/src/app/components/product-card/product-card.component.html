@@ -1,13 +1,43 @@
 <div class="product-card" (click)="viewDetails()">
   <!-- Image du produit -->
   <div class="product-image-wrapper">
-    <div *ngIf="product.images && product.images.length > 0" class="product-image">
-      <img [src]="product.images[0]" [alt]="product.nom" />
+    <div *ngIf="product.images && product.images.length > 0" class="product-image carousel-frame">
+      <img [src]="product.images[currentImageIndex]" [alt]="product.nom" />
+
+      <button
+        *ngIf="product.images.length > 1"
+        type="button"
+        class="carousel-nav prev"
+        (click)="showPrevImage($event)"
+        aria-label="Image précédente">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+
+      <button
+        *ngIf="product.images.length > 1"
+        type="button"
+        class="carousel-nav next"
+        (click)="showNextImage($event)"
+        aria-label="Image suivante">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+      <div *ngIf="product.images.length > 1" class="carousel-dots">
+        <button
+          *ngFor="let image of product.images; let i = index"
+          type="button"
+          class="dot"
+          [class.active]="currentImageIndex === i"
+          (click)="setImage(i, $event)"
+          [attr.aria-label]="'Aller à l\'image ' + (i + 1)">
+        </button>
+      </div>
     </div>
+
     <div *ngIf="!product.images || product.images.length === 0" class="product-image-placeholder">
       <i class="fas fa-image fa-3x"></i>
     </div>
-    
+
     <!-- Badge si rupture de stock -->
     <div *ngIf="product.quantite === 0" class="stock-badge-overlay">
       Rupture de stock
@@ -22,9 +52,9 @@
     <p class="product-price">
       {{ formatPrice(product.prix) }}
     </p>
-    
+
     <!-- Bouton ajouter au panier -->
-    <button 
+    <button
       class="btn btn-success btn-add-cart"
       (click)="onAddToCart($event)"
       [disabled]="isAddingToCart || product.quantite === 0">
